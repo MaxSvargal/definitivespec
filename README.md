@@ -1,4 +1,4 @@
-# **Definitive Development Methodology: The Agent-Driven Methodology**
+# **Definitive Development: The Agent-Driven Methodology**
 
 Welcome to the DefinitiveSpec methodology hub. This repository contains the core documents defining our structured, AI-augmented approach to software development, known as the Definitive Development Methodology (DDM).
 

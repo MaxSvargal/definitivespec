@@ -199,7 +199,7 @@ schema kpi {
 
 ---
 
-## Part 3: Core Implementation & Generative Directives for "PrimeCart_TS_Express_TypeORM_Agent_v3.1"
+## Part 3: Core Implementation & Generative Directives
 
 These directives are the agent's **"Cookbook of Implementation, Refactoring, & Generative Patterns."** They are mandatory for all code generation and modification tasks. The `target_tool` version is updated to reflect the new capabilities.
 
@@ -339,7 +339,7 @@ generative_pattern BusinessDrivenFeatureAnalysis -> {
 
 ---
 
-## Part 4: Methodology Micro-Guide (DDM v3.1 Agent Protocol)
+## Part 4: Methodology Micro-Guide (DDM Agent Protocol)
 
 **Intent:** This section defines the **Rules of Engagement** for the AI agent. It is the protocol governing all agent tasks, ensuring safety, consistency, and alignment with the DDM. **This protocol is not optional.**
 

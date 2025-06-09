@@ -66,7 +66,7 @@ ConfigFieldDef ::= FieldName=Identifier ':' FieldType=QualifiedIdentifier ('{' (
 
 This schema defines the structure and attributes for each DefinitiveSpec artifact type. The agent must use this as the "type system" for understanding specifications. `QualifiedName` is the primary identifier for cross-linking.
 
-```definitive_spec
+```dspec
 // Notation: `?` denotes optional. `list<T>` is a list of type T.
 // `QualifiedName<artifact_type>` indicates the link must resolve to an artifact of that type.
 // All string values can be single or multi-line.
@@ -195,6 +195,7 @@ schema kpi {
     target: string; // A target for the metric, e.g., "> 65%", "< 150ms"
     related_specs: list<QualifiedName>; // Links to behaviors, interactions, or APIs that influence this KPI.
 }
+```
 
 ---
 
@@ -202,7 +203,7 @@ schema kpi {
 
 These directives are the agent's **"Cookbook of Implementation, Refactoring, & Generative Patterns."** They are mandatory for all code generation and modification tasks. The `target_tool` version is updated to reflect the new capabilities.
 
-```definitive_spec
+```dspec
 // --- `detailed_behavior` Keyword Implementation Patterns (Translation) ---
 
 pattern PERSIST(entity_variable, Abstract_DataStore_Name) -> {
@@ -342,7 +343,7 @@ generative_pattern BusinessDrivenFeatureAnalysis -> {
 
 **Intent:** This section defines the **Rules of Engagement** for the AI agent. It is the protocol governing all agent tasks, ensuring safety, consistency, and alignment with the DDM. **This protocol is not optional.**
 
-```definitive_spec
+```dspec
 // --- Phase 1: Pre-Execution Validation (Agent's Internal SVS) ---
 
 methodology_rule DDM-RULE-000: PreflightCheck {

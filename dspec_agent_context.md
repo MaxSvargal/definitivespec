@@ -20,7 +20,7 @@ Keyword ::= 'requirement' | 'design' | 'model' | 'api' | 'code' | 'test'
           | 'behavior' | 'policy' | 'infra' | 'directive' | 'interaction'
           | 'event' | 'glossary' | 'kpi' ;
 
-Identifier ::= /[a-zA-Z_][a-zA-Z0-9_]*/ ;
+Identifier ::= /[a-zA-Z_@][a-zA-Z0-9_/]*/ ;
 QualifiedIdentifier ::= Identifier ('.' Identifier)* ;
 
 ArtifactBlock ::= '{' (AttributeAssignment | NestedArtifact)* '}' OptionalSemicolon ;
@@ -28,7 +28,19 @@ OptionalSemicolon ::= (';')? ;
 
 AttributeAssignment ::= AttributeName=Identifier ':' AttributeValue=Value OptionalSemicolon ;
 NestedArtifact ::= FsmDef | FormalModelDef | ErrorCatalogDef | LoggingDef | SecurityDef | NfrGuidanceDef
-                 | ConfigurationDef | DeploymentDef | SpecificDirectiveBlock | InteractionStepDef ;
+                 | ConfigurationDef | DeploymentDef | SpecificDirectiveBlock | InteractionStepDef | DirectivePatternDef
+                 | NfrDef | TermDef ;
+
+DirectivePatternDef ::= PatternType=Identifier PatternSignature '->' PatternBlock OptionalSemicolon ;
+PatternType ::= 'pattern' | 'nfr_pattern' | 'refactor_pattern' | 'architectural_pattern'
+              | 'simulation_pattern' | 'generative_pattern' ;
+
+PatternSignature ::= PatternKeyword=Identifier ('(' (PatternParam (',' PatternParam)*)? ')')? ;
+PatternParam ::= Identifier ;
+
+PatternBlock ::= '{' (SimplePatternAttribute | LookupBlock)* '}' ;
+SimplePatternAttribute ::= AttributeName=Identifier ':' AttributeValue=Value OptionalSemicolon ; 
+LookupBlock ::= 'lookup' ':' ObjectLiteralValue OptionalSemicolon ;
 
 Value ::= StringValue | IntegerValue | NumberValue | BooleanValue
         | IDReferenceValue | ListValue | ObjectLiteralValue ;
@@ -42,7 +54,14 @@ ListValue ::= '[' (Value (',' Value)*)? ']' ;
 ObjectLiteralValue ::= '{' (ObjectEntry (',' ObjectEntry)*)? '}' ;
 ObjectEntry ::= (Identifier | '"' ( /[^"\\]/ | /\\./ )* '"') ':' Value ;
 
-ModelFieldDef ::= FieldName=Identifier ':' FieldType=QualifiedIdentifier ('{' (ModelFieldConstraint | PiiCategoryAttribute)* '}' )? OptionalSemicolon ;
+ModelFieldDef ::= FieldName=Identifier ':' FieldType=TypeReference ('{' (ModelFieldConstraint | PiiCategoryAttribute)* '}' )? OptionalSemicolon ;
+
+TypeReference ::= GenericType | QualifiedIdentifier | PrimitiveType ;
+
+PrimitiveType ::= 'String' | 'Number' | 'Boolean' | 'Any' | 'Object' | 'Function' ;
+
+GenericType ::= ('List' | 'Record') '<' TypeReference (',' TypeReference)* '>' ;
+
 PiiCategoryAttribute ::= ('pii_category' ':' StringValue) OptionalSemicolon;
 ModelFieldConstraint ::= ('required'|'default'|'description'|'minLength'|'maxLength'|'pattern'|'minimum'|'maximum'|'enum'|'format'|'minItems'|'maxItems'|'uniqueItems') ':' Value OptionalSemicolon;
 
@@ -58,6 +77,10 @@ ErrorDefinition ::= 'define' ErrorName=Identifier '{' (('http_status'|'log_level
 
 ConfigurationDef ::= 'configuration' Name=Identifier '{' (ConfigFieldDef | ('description' ':' Value))* '}' OptionalSemicolon;
 ConfigFieldDef ::= FieldName=Identifier ':' FieldType=QualifiedIdentifier ('{' (('required'|'default'|'description'|'constraints'|'sensitive') ':' Value)* '}' )? OptionalSemicolon ;
+
+NfrDef ::= 'nfr' Name=Identifier '{' (AttributeAssignment)* '}' OptionalSemicolon ;
+
+TermDef ::= 'term' Name=Identifier '{' 'definition' ':' StringValue OptionalSemicolon '}' OptionalSemicolon ;
 ```
 
 ---
@@ -74,6 +97,7 @@ This schema defines the structure and attributes for each DefinitiveSpec artifac
 schema requirement {
     title: string;
     description?: string;
+    rationale?: string; // The "why" behind the requirement.
     priority?: string;
     status?: string;
     acceptance_criteria?: list<string>;
@@ -84,8 +108,20 @@ schema design {
     title: string;
     description?: string;
     responsibilities?: list<string>;
+
+    // --- Structural Relationships ---
+    part_of?: QualifiedName<design>; // Is this a sub-component of a larger design? (Composition)
+
+    // --- Contractual Relationships ---
+    api_contract_model?: QualifiedName<model>; // What is the DATA shape of its public API/Props?
+    exposes_interface?: QualifiedName; // What is the BEHAVIORAL contract it fulfills?
+
+    // --- Dependency Relationships ---
+    dependencies?: list<QualifiedName<design>>; // What OTHER SPECIFIED DESIGNS does it use? (Internal)
+    external_dependencies?: list<string>; // What UNSPECIFIED LIBRARIES/SERVICES does it use? (External)
+
+    // --- Link back to Requirements ---
     fulfills?: list<QualifiedName<requirement>>;
-    dependencies?: list<QualifiedName<design>>;
     applies_nfrs?: list<QualifiedName<policy.nfr>>;
 }
 
@@ -101,11 +137,17 @@ schema api {
     summary?: string;
     operationId?: string;
     part_of?: QualifiedName<design>;
-    path: string;
-    method: string;
+    path: string; // The endpoint/topic/channel identifier (e.g., "/users/{id}", "rpc.UserService.GetUser")
+    method: string; // The operation verb (e.g., "GET", "POST", "SUBSCRIBE", "PUBLISH", "CALL")
     version?: string;
-    request_model?: QualifiedName<model>;
-    response_model?: QualifiedName<model>;
+
+    // Each object in the list should follow the ParameterDefinition structure:
+    // { name: string, in: string, description?: string, required?: boolean, type: string, format?: string }
+    // 'in' specifies the parameter location (e.g., "path", "query", "header" for HTTP; "key", "event_header" for events).
+    parameters?: list<object>;
+
+    request_model?: QualifiedName<model>; // Defines the main data payload (e.g., HTTP Body, Event Payload)
+    response_model?: QualifiedName<model>; // Defines the main success response payload
     errors?: list<QualifiedName<policy.error_catalog.define>>;
     security_scheme?: list<QualifiedName<policy.security.authentication_scheme>>;
     tags?: list<string>;
@@ -124,6 +166,10 @@ schema code {
     throws_errors?: list<QualifiedName<policy.error_catalog.define>>;
     dependencies?: list<string>; // Abstract dependencies
     applies_nfrs?: list<QualifiedName<policy.nfr>>;
+    escape_hatch?: object {
+        description: string; // Mandatory: Justification for why detailed_behavior is insufficient.
+        implementation_pattern_ref: QualifiedName<directive.generative_pattern>; // Mandatory: A link to a directive that contains the actual implementation snippet or generation logic.
+    };
 }
 
 schema test {
@@ -134,6 +180,7 @@ schema test {
     verifies_code?: list<QualifiedName<code>>;
     verifies_nfr?: list<QualifiedName<policy.nfr>>;
     verifies_behavior?: list<QualifiedName<behavior>>;
+    verifies_design?: list<QualifiedName<design>>;
     type: string;
     priority?: string;
     test_location: object; // { framework, filepath, test_case_id_in_file }
@@ -161,7 +208,7 @@ schema behavior {
 schema policy {
     title?: string;
     description?: string;
-    // Contains nested 'error_catalog', 'logging', 'security', or 'nfr' artifacts.
+    // Contains nested 'error_catalog', 'logging', 'security', or 'nfr' blocks.
 }
 
 schema infra {
@@ -173,7 +220,55 @@ schema infra {
 schema directive {
     target_tool: string;
     description?: string;
-    // Contains tool-specific key-value pairs and nested blocks.
+    // A directive artifact contains one or more pattern definitions.
+    // The following descriptions define the structure of the block
+    // that follows each pattern keyword.
+}
+
+// -- Structure for the block following the 'pattern' keyword --
+// pattern <Name>(<params>) -> { ... THIS STRUCTURE ... }
+block_schema pattern {
+    intent?: string;
+    example_spec?: string;
+
+    // Option 1: For Simple Keyword Patterns (e.g., PERSIST, FOR_EACH)
+    template?: string;
+    wrapper_template?: string;
+
+    // Option 2: For Dispatcher Keyword Patterns (e.g., CALL, CREATE_INSTANCE)
+    lookup?: object {
+        "*" : {
+            call?: string,
+            inject?: object
+        }
+    };
+
+    // Common Optional Attributes
+    imports?: object;
+    pre_hook_triggers?: list<string>;
+    post_hook_triggers?: list<string>;
+    analytic_hooks?: list<string>;
+}
+
+// -- Structure for the block following the 'nfr_pattern' keyword --
+// nfr_pattern <QualifiedName> -> { ... THIS STRUCTURE ... }
+block_schema nfr_pattern {
+    intent: string;
+    hook?: string;
+    trigger: string;
+    template?: string;
+    wrapper_template?: string;
+    imports?: list<string>;
+}
+
+// -- Structure for the block following the 'nfr' keyword --
+// nfr <Name> { ... THIS STRUCTURE ... }
+block_schema nfr {
+   id?: string;
+   statement: string;
+   verification_method?: string;
+   applies_to?: list<QualifiedName<design>>;
+   metrics?: object;
 }
 
 schema event {
@@ -185,7 +280,11 @@ schema event {
 schema glossary {
     title?: string;
     description?: string;
-    // Contains a list of term definitions.
+    // Contains a list of 'term' blocks.
+}
+
+block_schema term {
+   definition: string;
 }
 
 schema kpi {
@@ -199,9 +298,9 @@ schema kpi {
 
 ---
 
-## Part 3: Core Implementation & Generative Directives
+## Part 3: Foundational Implementation & Generative Directives
 
-These directives are the agent's **"Cookbook of Implementation, Refactoring, & Generative Patterns."** They are mandatory for all code generation and modification tasks. The `target_tool` version is updated to reflect the new capabilities.
+This section defines the structure of directives and provides a set of common, foundational patterns. Project-specific contexts will provide the domain-specific implementations.
 
 ```dspec
 // --- `detailed_behavior` Keyword Implementation Patterns (Translation) ---
@@ -218,10 +317,6 @@ pattern PERSIST(entity_variable, Abstract_DataStore_Name) -> {
 pattern CALL(Abstract_Service_Call, with_clause_object) -> {
     intent: "Invoke a well-defined, abstract dependency. This separates business logic from the specific implementation of a dependency.";
     lookup: {
-        "Abstract.UserDataStore.CheckByEmail": {
-            call: "await this.userRepository.findOneBy({ email: {{with_clause_object.email}} });",
-            inject: { name: "userRepository", type: "Repository<UserEntity>" }
-        },
         "Abstract.PasswordHasher.Hash": {
             call: "await this.passwordHasher.hash({{with_clause_object.password}});",
             inject: { name: "passwordHasher", type: "PasswordHasherService" }
@@ -271,17 +366,9 @@ pattern RETURN_ERROR(error_spec_qualified_name, with_clause_object?) -> {
 
 // --- NFR Implementation Patterns (Cross-Cutting Concerns) ---
 
-nfr_pattern policies.PrimeCartDataSecurityNFRs.PiiFieldEncryption -> {
-    intent: "To comply with data security policies, automatically encrypt data fields marked as PII before they are persisted.";
-    hook: "pre_persist_hook";
-    trigger: "model_field.has('pii_category')";
-    template: "{{field_name}} = piiEncrypt({{field_name}});";
-    imports: ["piiEncrypt from '@/lib/security/encryption'"];
-}
-
-nfr_pattern policies.PrimeCartPerformanceNFRs.ProductReadPathCaching -> {
-    intent: "Apply cache-aside pattern to high-volume read operations.";
-    trigger: "code_spec.applies_nfrs.includes('policies.PrimeCartPerformanceNFRs.ProductReadPathCaching')";
+nfr_pattern policies.StandardPerformanceNFRs.GenericReadPathCaching -> {
+    intent: "Apply a cache-aside pattern to high-volume read operations.";
+    trigger: "code_spec.applies_nfrs.includes('policies.StandardPerformanceNFRs.GenericReadPathCaching')";
     wrapper_template: "const cacheKey = ...; const cached = ...; if (cached) return cached; const result = {{original_function_body_placeholder}}; await this.cache.set(cacheKey, result); return result;";
 }
 
@@ -334,6 +421,29 @@ generative_pattern BusinessDrivenFeatureAnalysis -> {
         "5. **Measure & Report:** Compare the final `World State` and event logs from both simulations to calculate the impact on the target `kpi` and any NFRs. Generate the final report.",
         "6. **Await Go/No-Go:** Await user confirmation before presenting the draft specs for finalization."
     ];
+}
+
+// --- Escape Hatch Implementation Patterns (For complex, non-abstractable logic) ---
+
+generative_pattern high_performance.BitwiseImageManipulation -> {
+    intent: "Provides a pre-written, highly-optimized TypeScript snippet for a specific bitwise image filter operation. To be used via escape_hatch only.";
+    input_params: ["source_buffer", "output_buffer", "options"];
+    // The 'template' in a generative_pattern for an escape_hatch contains the literal code.
+    template: `
+        // WARNING: This is a high-performance, low-level implementation. Do not modify without extensive benchmarking.
+        // For detailed explanation, see documentation linked in the 'high_performance.BitwiseImageManipulation' directive.
+        const width = {{options}}.width;
+        const height = {{options}}.height;
+        for (let i = 0; i < width * height * 4; i += 4) {
+            // Example: Invert RGB, leave Alpha unchanged
+            {{output_buffer}}[i] = 255 - {{source_buffer}}[i];
+            {{output_buffer}}[i + 1] = 255 - {{source_buffer}}[i + 1];
+            {{output_buffer}}[i + 2] = 255 - {{source_buffer}}[i + 2];
+            {{output_buffer}}[i + 3] = {{source_buffer}}[i + 3];
+        }
+        return {{output_buffer}};
+    `;
+    imports: []; // No special imports needed for this example
 }
 ```
 
@@ -429,5 +539,14 @@ methodology_rule DDM-RULE-017: PatternDistillation {
         1. Implement it as requested.
         2. In a separate section of your response, propose a new, generalized `pattern` definition for the `directives` file that would encapsulate this logic.
         3. Suggest a refactoring of the source `detailed_behavior` to use the new abstract keyword.";
+}
+
+methodology_rule DDM-RULE-018: EscapeHatchHandling {
+    principle: "Controlled Egress to Concrete Implementation.";
+    instruction: "When you encounter a `code` spec with the `escape_hatch` attribute, you MUST NOT process its `detailed_behavior`. Instead:
+        1.  Validate that the `escape_hatch.implementation_pattern_ref` attribute points to a valid `generative_pattern` in a `directive` artifact.
+        2.  Your primary output for this code unit will be the code generated by applying the referenced `generative_pattern`. You will use the `code` spec's signature and context to supply the `input_params` for the pattern's template.
+        3.  You MUST prepend a warning comment to the generated code, citing the `escape_hatch.description` and the source `directive` pattern.
+        4.  You MUST issue a high-priority notification in your response, flagging the use of an escape hatch for mandatory human review and verification, as it bypasses standard abstract logic processing and NFR application.";
 }
 ```

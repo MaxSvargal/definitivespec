@@ -136,8 +136,7 @@ export default function DDM2Page() {
           </h2>
             <p className="text-xl text-gray-300 mb-8 mt-16 max-w-4xl mx-auto leading-relaxed">
               Our agent is not a creative co-pilot; it's a <strong className="text-[#f97316]">disciplined executor</strong>. 
-              It's a new kind of tool—a computer within an LLM—that takes precise specifications as input and produces 
-              predictable, high-quality code as output. You are always in control.
+              It's a new kind of tool—a computer within an LLM—that takes natural language requirements and raw ideas as input and produces precise specifications as output. You ready to start writing high-quality code.
             </p>
           </div>
 

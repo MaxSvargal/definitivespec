@@ -39,7 +39,7 @@ export default function DDM2Page() {
           </h2>
             <p className="text-xl text-gray-300 mb-8 mt-16 max-w-4xl mx-auto leading-relaxed">
               DefinitiveSpec isn't just a set of files; it's a rigorous, iterative process. <br/>
-              This closed-loop system ensures that every line of code is traceable <br/>
+              This closed-loop system ensures that every piece of specification is traceable <br/>
               to a validated requirement, eliminating drift and ambiguity.
             </p>
           </div>
@@ -188,7 +188,7 @@ export default function DDM2Page() {
               </div>
               <h4 className="text-sm font-semibold text-white mb-2">You Program the Agent</h4>
               <p className="text-gray-300 text-sm leading-relaxed">
-                <strong className="text-white">You program the agent.</strong> The 
+                The 
                 <code className="bg-gray-800 px-1 py-0.5 rounded text-xs" style={{ color: '#00B8FF' }}>directive</code> patterns that translate specs into code 
                 are your team's "cookbook." They are managed by your architects and governed by a formal process. We are so serious about this 
                 that we even have <code className="bg-gray-800 px-1 py-0.5 rounded text-xs" style={{ color: '#00B8FF' }}>test</code> specs 

@@ -12,14 +12,14 @@ export default function RootLayout({
       <head>
         <title>DefinitiveSpec | The AI-Native Methodology for High-Quality Software</title>
         <meta name="description" content="DefinitiveSpec is an AI-native development methodology that transforms precise specifications into verified, high-quality code."></meta>
-        <link rel="canonical" href="https://www.definitivespec.github.io/"></link>
+        <link rel="canonical" href="https://architectlm.github.io/DDM/"></link>
         <link rel="icon" href="/favicon.ico" sizes="any"></link>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
         <meta property="og:title" content="DefinitiveSpec: From Idea to Audited Code, Automatically"></meta>
         <meta property="og:description" content="DefinitiveSpec is an AI-native development methodology that transforms precise specifications into high-quality, verified software. Stop debating ambiguity and start shipping with certainty."></meta>
         <meta property="og:type" content="website"></meta>
-        <meta property="og:url" content="https://www.definitivespec.github.io/"></meta>
+        <meta property="og:url" content="https://architectlm.github.io/DDM/"></meta>
         {/* <meta property="og:image" content="https://www.definitivespec.io/og-image.png"></meta> */}
         <meta property="og:site_name" content="DefinitiveSpec"></meta>
         {/* <meta name="twitter:card" content="summary_large_image"></meta> */}

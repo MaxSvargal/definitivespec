@@ -135,53 +135,18 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
     setExpandedItem(expandedItem === artifactType ? null : artifactType);
   };
 
-  const getSceneContent = (): { title: string; content: string } => {
-    const SCENE_CONFIGS: Record<number, { title: string; content: string }> = {
-      0: {
-        title: "Definitive Specification Data Model",
-        content: "DefinitiveSpec provides a comprehensive set of artifacts to model every aspect of your system. This toolkit is the foundation of our AI-native methodology, transforming precise specifications into high-quality, verified software."
-      },
-      1: {
-        title: "Part 1: The Core - Implementing a Feature",
-        content: "At the heart of any system is the feature. DDM provides a tight loop of artifacts to define, implement, and verify this core logic with absolute clarity."
-      },
-      2: {
-        title: "Part 2: The Structure - Architecting the System",
-        content: "Features don't live in isolation. You need to define how they fit into the bigger picture. These artifacts build the architectural blueprint and model how components interact."
-      },
-      3: {
-        title: "Part 3: The Governance - Enforcing the Rules",
-        content: "A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and <i>most importantly</i> how the AI agent should behave. This is how you achieve consistency at scale."
-      },
-      4: {
-        title: "Part 4: The Metrics - Measuring What Matters",
-        content: "How do you prove a feature is successful? A kpi artifact directly links your technical specifications to measurable business outcomes, like \"Checkout Conversion Rate > 65%\". This isn't just for reporting; it enables the agent to run \"What-If\" analyses, forecasting the impact of a proposed change before a single line of code is written."
-      }
-    };
-    
-    const config = SCENE_CONFIGS[currentScene];
-    return config || SCENE_CONFIGS[0];
-  };
-
-  const sceneContent = getSceneContent();
-
   return (
-    <div className="bg-[#03070e]">
+    <div className="bg-[#03070e] overflow-hidden">
       {/* Initial section */}
-      <section className="h-screen flex items-center justify-center px-12 -mt-12">
+      <section className="h-screen w-full flex items-center">
         <div className="max-w-lg">
-          <div className='flex flex-col items-start justify-between'>
-          <div className="mb-6 h-[400px] max-w-[320px]">
-            <AnimatedWords />
-          </div>
-            <p className="text-lg text-gray-300 mb-8 leading-relaxed">
-              {sceneContent.content}
-            </p>
-            {currentScene === 0 && (
-              <div className="text-sm text-neon-blue animate-pulse">
-                ↓ Scroll to explore the system
-              </div>
-            )}
+          <div className='flex flex-col items-center justify-between'>
+            <div className="mb-6 h-[400px] w-[500px] ml-20">
+              <AnimatedWords />
+            </div>
+            <div className="text-sm text-neon-blue animate-pulse">
+              ↓ Scroll to explore the system
+            </div>
             {/* Social Media Buttons */}
             <div className="absolute top-5 right-0 h-20 flex justify-center items-center gap-4 w-2/5 opacity-20 hover:opacity-100 transition-opacity duration-300">
               <SocialButton
@@ -220,7 +185,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
             <p className="text-gray-200 text-6xl leading-[.8em]">Implementing <br/>a Feature</p>
           </h2>
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-            At the heart of any system is the feature. DDM provides a tight loop of artifacts 
+            At the heart of any system is the feature. Definitive Development Methodology provides a tight loop of artifacts 
             to define, implement, and verify this core logic with absolute clarity.
           </p>
           <div className="space-y-3 text-gray-400">

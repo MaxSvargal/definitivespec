@@ -108,7 +108,7 @@ export default function DDM2Page() {
                   </div>
                   <h3 className="text-lg font-bold text-yellow-500">The Feedback Loop</h3>
                 </div>
-                <h4 className="text-sm font-semibold text-white mb-2">The Golden Rule of DDM</h4>
+                <h4 className="text-sm font-semibold text-white mb-2">The Golden Rule of DefinitiveSpec</h4>
                 <p className="text-gray-300 text-sm leading-relaxed mb-3">
                   <strong className="text-yellow-500">The Spec is Truth. Always.</strong> If testing or a new insight reveals a flaw, 
                   you don't patch the code. You update the <em>specification</em>. This triggers the cycle again, ensuring your 

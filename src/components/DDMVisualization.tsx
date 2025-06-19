@@ -494,7 +494,7 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                     opacity={opacity}
                     className="transition-all duration-1000"
                     style={{
-                      filter: opacity > 0.5 ? `drop-shadow(0 0 10px ${ringColor === '#fbbf24' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(0, 229, 153, 0.4)'})` : 'none'
+                      filter: opacity > 0.5 ? `drop-shadow(0 0 10px ${ringColor.includes('251, 191, 36') ? 'rgba(251, 191, 36, 0.4)' : 'rgba(0, 229, 153, 0.4)'})` : 'none'
                     }}
                   />
                   <text

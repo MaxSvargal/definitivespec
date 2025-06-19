@@ -52,7 +52,7 @@ export interface SceneParticle {
 }
 
 export interface SceneSpecialEffect {
-  type: 'codeTransform';
+  type: 'codeTransform' | 'kpiSpark' | 'whatifSpark';
   delay: number;
 }
 

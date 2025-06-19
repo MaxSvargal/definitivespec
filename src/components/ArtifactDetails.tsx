@@ -180,10 +180,16 @@ export const ArtifactDetails: React.FC<ArtifactDetailsProps> = ({ artifactType, 
       case 'kpi':
         return {
           subtitle: 'The Value',
-          description: 'To link technical work directly to business metrics, enabling "What-If" analysis to forecast the impact of changes on key results.',
+          description: 'Instead of just saying "improve checkout," you define it with absolute clarity. The agent understands this spec as a core system objective.',
           code: `kpi CheckoutConversionRate {
+    title: "Checkout Funnel Conversion Rate";
+    description: "The percentage of users who start a checkout and complete an order.";
+    // The agent understands this formula and its dependencies.
     metric_formula: "(count(events.OrderCompleted) / count(events.CheckoutStarted)) * 100";
+    // A clear, verifiable target for success.
     target: "> 65%";
+    // Directly links the business goal to the technical implementation.
+    related_specs: [ interaction.CheckoutFlow ];
 }`
         };
       

@@ -62,7 +62,7 @@ const RINGS = {
   },
   outer: {
     label: 'Governance & Rules',
-    artifacts: ['policy', 'nfr', 'infra', 'glossary', 'directive'],
+    artifacts: ['policy', 'nfr', 'infra', 'glossary', 'kpi', 'directive'],
     radius: 380,
     color: 'rgba(168, 85, 247, 0.8)'
   }
@@ -125,6 +125,25 @@ const SCENE_CONFIGS: Record<number, VisualizationSceneConfig> = {
     ],
     specialEffects: [
       { type: 'codeTransform', delay: 1550 }
+    ]
+  },
+  4: {
+    highlightedArtifacts: ['kpi', 'interaction', 'api', 'requirement'],
+    zoomLevel: 0.8,
+    panOffset: { x: 0, y: -10 },
+    showDirectiveEffect: false,
+    codeTransformed: false,
+    connections: [
+      { from: 'kpi', to: 'interaction', type: 'measure', delay: 300 },
+      { from: 'kpi', to: 'api', type: 'measure', delay: 500 },
+      { from: 'requirement', to: 'kpi', type: 'whatif', delay: 1200 }
+    ],
+    specialEffects: [
+      { type: 'kpiSpark', delay: 700 },
+      { type: 'whatifSpark', delay: 1000 }
+    ],
+    particles: [
+      { artifactTypes: ['kpi'], count: 5, color: '#fbbf24', delay: 800 }
     ]
   }
 };
@@ -206,14 +225,16 @@ const useScrollProgress = () => {
       const progress = Math.min(scrollTop / documentHeight, 1);
       setScrollProgress(progress);
       let newScene: number;
-      if (progress < 0.15) {
+      if (progress < 0.12) {
           newScene = 0;
-      } else if (progress < 0.45) {
+      } else if (progress < 0.36) {
           newScene = 1;
-      } else if (progress < 0.75) {
+      } else if (progress < 0.60) {
           newScene = 2;
-      } else {
+      } else if (progress < 0.80) {
           newScene = 3;
+      } else {
+          newScene = 4;
       }
 
       setCurrentScene(prevScene => newScene !== prevScene ? newScene : prevScene);
@@ -412,6 +433,19 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                 <stop offset="0%" stopColor="#00E599" />
                 <stop offset="100%" stopColor="#a855f7" />
               </linearGradient>
+              <linearGradient id="kpiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#fbbf24" />
+                <stop offset="100%" stopColor="#f59e0b" />
+              </linearGradient>
+              <linearGradient id="whatifGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="30%" stopColor="#fbbf24" />
+                <stop offset="80%" stopColor="#10b981" />
+                <stop offset="100%" stopColor="#10b981" />
+              </linearGradient>
+              <linearGradient id="kpiToArchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="50%" stopColor="#fbbf24" />
+                <stop offset="100%" stopColor="#00B8FF" />
+              </linearGradient>
               <filter id="glow">
                 <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                 <feMerge> 
@@ -442,7 +476,11 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
               const opacity = currentScene === 0 ? 0.8 : 
                              (currentScene === 1 && ringKey === 'inner') ? 1 :
                              (currentScene === 2 && ringKey === 'middle') ? 1 :
-                             (currentScene === 3 && ringKey === 'outer') ? 1 : 0.2;
+                             (currentScene === 3 && ringKey === 'outer') ? 1 :
+                             (currentScene === 4 && ringKey === 'outer') ? 1 : 0.2;
+
+              // Special gold color for outer ring in KPI scene (scene 4)
+              const ringColor = (currentScene === 4 && ringKey === 'outer') ? 'rgba(251, 191, 36, 0.8)' : ring.color;
 
               return (
                 <g key={ringKey}>
@@ -451,19 +489,19 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                     cy={350}
                     r={ring.radius}
                     fill="none"
-                    stroke={ring.color}
+                    stroke={ringColor}
                     strokeWidth="2"
                     opacity={opacity}
                     className="transition-all duration-1000"
                     style={{
-                      filter: opacity > 0.5 ? 'drop-shadow(0 0 10px rgba(0, 229, 153, 0.4))' : 'none'
+                      filter: opacity > 0.5 ? `drop-shadow(0 0 10px ${ringColor === '#fbbf24' ? 'rgba(251, 191, 36, 0.4)' : 'rgba(0, 229, 153, 0.4)'})` : 'none'
                     }}
                   />
                   <text
                     x={450}
                     y={350 - ring.radius - 35}
                     textAnchor="middle"
-                    fill={ring.color}
+                    fill={ringColor}
                     fontSize="14"
                     fontWeight="600"
                     opacity={opacity}
@@ -493,7 +531,16 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
               // Determine stroke color based on scene and connection type
               let strokeColor;
               
-              if (currentScene === 3) {
+              if (currentScene === 4) {
+                // KPI scene
+                if (connection.type === 'measure') {
+                  strokeColor = 'url(#kpiToArchGradient)'; // gold to blue gradient for measurement connections
+                } else if (connection.type === 'whatif') {
+                  strokeColor = 'url(#whatifGradient)'; // green to gold gradient for what-if analysis
+                } else {
+                  strokeColor = '#fbbf24'; // gold for other KPI connections
+                }
+              } else if (currentScene === 3) {
                 // Governance scene - all purple except directive to code
                 if (connection.type === 'transform') {
                   strokeColor = 'url(#directiveGradient)'; // purple to green gradient
@@ -529,6 +576,8 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                     y2={currentY}
                     stroke={strokeColor}
                     strokeWidth={connection.type === 'transform' ? '4' : 
+                                connection.type === 'measure' ? '2' :
+                                connection.type === 'whatif' ? '2.5' :
                                 connection.type === 'broadcast' ? '1' : '2'}
                     className={connection.type === 'transform' ? 'animate-pulse' : ''}
                     opacity={0.3}
@@ -610,6 +659,8 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                 }}
               />
             ))}
+
+
             
             {/* Render INACTIVE artifacts (background layer) */}
             {sceneData.artifactPositions.map((position) => {
@@ -752,7 +803,16 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
               // Determine stroke color based on scene and connection type
               let strokeColor;
               
-              if (currentScene === 3) {
+              if (currentScene === 4) {
+                // KPI scene
+                if (connection.type === 'measure') {
+                  strokeColor = 'url(#kpiToArchGradient)'; // gold to blue gradient for measurement connections
+                } else if (connection.type === 'whatif') {
+                  strokeColor = 'url(#whatifGradient)'; // gold to green gradient for what-if analysis
+                } else {
+                  strokeColor = '#fbbf24'; // gold for other KPI connections
+                }
+              } else if (currentScene === 3) {
                 // Governance scene - all purple except directive to code
                 if (connection.type === 'transform') {
                   strokeColor = 'url(#directiveGradient)'; // purple to green gradient
@@ -788,6 +848,8 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                     y2={currentY}
                     stroke={strokeColor}
                     strokeWidth={connection.type === 'transform' ? '4' : 
+                                connection.type === 'measure' ? '2' :
+                                connection.type === 'whatif' ? '2.5' :
                                 connection.type === 'broadcast' ? '1' : '2'}
                     className={connection.type === 'transform' ? 'animate-pulse' : ''}
                     opacity={0.8}
@@ -863,6 +925,7 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
               if (!isHighlighted) return null;
               
               const isDirective = position.type === 'directive' && currentScene === 3;
+              const isKpi = position.type === 'kpi' && currentScene === 4;
               const isCode = position.type === 'code';
               
               // Determine artifact color based on scene and ring
@@ -870,7 +933,20 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
               let artifactBgColor = 'rgba(15, 23, 42, 0.95)'; // default background
               let strokeGradient = null;
               
-              if (currentScene === 1) {
+              if (currentScene === 4) {
+                // KPI scene
+                if (position.type === 'kpi') {
+                  artifactColor = '#fbbf24'; // vibrant gold for KPI
+                  artifactBgColor = 'rgba(0, 0, 0, 0.95)'; // dark background for contrast
+                  strokeGradient = 'url(#kpiGradient)'; // golden gradient border
+                } else if (position.type === 'interaction' || position.type === 'api') {
+                  artifactColor = '#00B8FF'; // blue for measured architecture components
+                } else if (position.type === 'requirement') {
+                  artifactColor = '#10b981'; // green for what-if analysis
+                } else {
+                  artifactColor = '#64748b'; // muted for other components
+                }
+              } else if (currentScene === 1) {
                 artifactColor = '#00E599'; // green for feature logic
               } else if (currentScene === 2) {
                 artifactColor = '#00B8FF'; // blue for system architecture
@@ -928,17 +1004,35 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
                     </g>
                   )}
                   
+                  {/* KPI pulsing glow effect */}
+                  {isKpi && (
+                    <circle
+                      cx={position.x}
+                      cy={position.y}
+                      r="45"
+                      fill="none"
+                      stroke="#fbbf24"
+                      strokeWidth="2"
+                      opacity="0.6"
+                      className="animate-pulse"
+                      style={{
+                        filter: 'blur(5px)',
+                        animation: 'pulse 2s ease-in-out infinite'
+                      }}
+                    />
+                  )}
+                  
                   {/* Solid background circle */}
                   <circle
                     cx={position.x}
                     cy={position.y}
-                    r={isDirective ? 32 : 28}
+                    r={isDirective ? 32 : isKpi ? 30 : 28}
                     fill={artifactBgColor}
                     stroke={strokeGradient || artifactColor}
-                    strokeWidth={isDirective ? 3 : 2}
+                    strokeWidth={isDirective ? 3 : isKpi ? 3 : 2}
                     className={`transition-all duration-500 ${isDirective ? 'animate-svg-glow-pulse' : ''}`}
                     style={{
-                      filter: `drop-shadow(0 0 ${isDirective ? '20' : '15'}px ${artifactColor}40)`
+                      filter: `drop-shadow(0 0 ${isDirective ? '20' : isKpi ? '18' : '15'}px ${artifactColor}40)`
                     }}
                   />
                   {/* Icon */}
@@ -1018,7 +1112,7 @@ export const DDMVisualization: React.FC<DDMVisualizationProps> = ({ onSceneChang
 
         {/* Scene indicator */}
         <div className="sticky bottom-12 left-8 w-64 h-5 text-sm text-gray-400 z-50">
-            Scene {currentScene + 1} of 4
+            Scene {currentScene + 1} of 5
         </div>
       </div>
     </>

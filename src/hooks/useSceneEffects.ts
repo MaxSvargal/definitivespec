@@ -46,8 +46,20 @@ export const useSceneEffects = (
   const handleSpecialEffect = useCallback((effect: SceneSpecialEffect) => {
     if (effect.type === 'codeTransform') {
       callbacks.onCodeTransform();
+    } else if (effect.type === 'kpiSpark') {
+      // KPI spark effect - create golden particles around KPI node
+      const kpiPosition = artifactPositions.find(pos => pos.type === 'kpi');
+      if (kpiPosition) {
+        callbacks.onParticleCreate(kpiPosition.x, kpiPosition.y, 8, '#fbbf24');
+      }
+    } else if (effect.type === 'whatifSpark') {
+      // What-if spark effect - create green-to-gold particles around requirement node
+      const requirementPosition = artifactPositions.find(pos => pos.type === 'requirement');
+      if (requirementPosition) {
+        callbacks.onParticleCreate(requirementPosition.x, requirementPosition.y, 5, '#10b981');
+      }
     }
-  }, [callbacks]);
+  }, [callbacks, artifactPositions]);
 
   useEffect(() => {
     // Clear all previous timers

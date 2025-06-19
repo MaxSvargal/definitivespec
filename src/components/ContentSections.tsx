@@ -152,6 +152,10 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
       3: {
         title: "Part 3: The Governance - Enforcing the Rules",
         content: "A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and <i>most importantly</i> how the AI agent should behave. This is how you achieve consistency at scale."
+      },
+      4: {
+        title: "Part 4: The Metrics - Measuring What Matters",
+        content: "How do you prove a feature is successful? A kpi artifact directly links your technical specifications to measurable business outcomes, like \"Checkout Conversion Rate > 65%\". This isn't just for reporting; it enables the agent to run \"What-If\" analyses, forecasting the impact of a proposed change before a single line of code is written."
       }
     };
     
@@ -350,7 +354,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
               artifactType="nfr"
               icon={ARTIFACT_ICONS.nfr}
               title="Defining Quality"
-              description=" To make Non-Functional Requirements (like performance or security) a formal part of your spec"
+              description="Non-Functional Requirements as a formal part"
               color="#eab308"
               isExpanded={expandedItem === 'nfr'}
               onToggle={() => onToggleExpand('nfr')}
@@ -384,6 +388,47 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
                 onToggle={() => onToggleExpand('directive')}
               />
               <div className="absolute -inset-1 bg-gradient-to-r from-neon-green/20 to-transparent rounded-lg pointer-events-none animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* KPI section */}
+      <section className="min-h-screen flex items-center justify-center p-12">
+        <div className="max-w-lg">
+          <h2 className="text-5xl font-bold mb-8 text-yellow-400 uppercase tracking-tighter">
+            <p className='leading-[.8em]'>
+              <span className="text-3xl leading-[.1em]">Part 4: </span>
+              <span className='text-[2.85rem] leading-[.1em]'>The Metrics</span>
+            </p>
+            <p className="text-gray-200 text-[4.25rem] leading-[.77em] -ml-1">Measuring</p>
+            <p className="text-gray-200 text-[3.17rem] leading-[.77em]">What Matters</p>
+          </h2>
+          <p className="text-lg text-gray-300 mb-6 leading-relaxed">
+            Business value is the ultimate test of any system. KPIs connect your technical architecture to business outcomes, enabling powerful what-if analysis and data-driven decision making.
+          </p>
+          <div className="space-y-3 text-gray-400">
+            <div className="relative">
+              <ExpandableArtifactItem
+                artifactType="kpi"
+                icon={ARTIFACT_ICONS.kpi}
+                title="Business Intelligence"
+                description="The Measure of Business Value"
+                color="#fbbf24"
+                isExpanded={expandedItem === 'kpi'}
+                onToggle={() => onToggleExpand('kpi')}
+              />
+              <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-transparent rounded-lg pointer-events-none animate-pulse"></div>
+            </div>
+            <div className="mt-6 p-4 bg-gray-900/50 rounded-lg border border-yellow-400/20">
+              <h4 className="text-yellow-400 font-semibold mb-2">✨ What-If Analysis</h4>
+              <p className="text-sm text-gray-300">
+              Because the agent understands the link between <code className="text-green-400">requirements</code>, <code className="text-green-400">code</code>, and KPIs, it can run a virtual simulation to predict the future. This creates a feedback loop 
+              between business strategy and technical implementation.
+              <br/>Before you write a line of code for a new feature, you can ask:
+              <br/><br/><i>- "What is the projected impact of requirement.AddNewPaymentMethod on kpi.CheckoutConversionRate?"</i>
+              <br/><br/>The agent analyzes the proposed changes, simulates user flows, and provides a data-driven forecast, turning strategic planning from guesswork into a science.
+              </p>
             </div>
           </div>
         </div>

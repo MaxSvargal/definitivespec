@@ -138,12 +138,13 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
   return (
     <div className="bg-[#03070e] overflow-hidden">
       {/* Initial section */}
-      <section className="h-screen w-full flex items-center">
+      <section className="h-screen w-full flex justify-center items-center px-12">
         <div className="max-w-lg">
-          <div className='flex flex-col items-center justify-between'>
-            <div className="mb-6 h-[400px] w-[500px] ml-20">
+          <div className='flex flex-col items-start justify-between pl-8'>
+            <div className="mb-6 h-[400px] w-[500px]">
               <AnimatedWords />
             </div>
+            <p className="text-lg text-gray-300 mb-8 leading-relaxed">DefinitiveSpec provides a comprehensive set of artifacts to model every aspect of your system. This toolkit is the foundation of our AI-native methodology, transforming precise specifications into high-quality, verified software.</p>
             <div className="text-sm text-neon-blue animate-pulse">
               ↓ Scroll to explore the system
             </div>

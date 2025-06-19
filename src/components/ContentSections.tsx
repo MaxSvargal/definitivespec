@@ -151,7 +151,7 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
       },
       3: {
         title: "Part 3: The Governance - Enforcing the Rules",
-        content: "A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and—most importantly—how the AI agent should behave. This is how you achieve consistency at scale."
+        content: "A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and <i>most importantly</i> how the AI agent should behave. This is how you achieve consistency at scale."
       }
     };
     
@@ -334,14 +334,14 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
             <p className="text-gray-200 text-[4.55rem] leading-[.77em]">Enforcing <br/>the Rules</p>
           </h2>
           <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-            A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and—most importantly—how the AI agent should behave. This is how you achieve consistency at scale.
+            A robust system needs rules that apply everywhere. These artifacts allow you to define system-wide policies, terminology, and <i>most importantly</i> how the AI agent should behave. This is how you achieve consistency at scale.
           </p>
           <div className="space-y-3 text-gray-400">
             <ExpandableArtifactItem
               artifactType="policy"
               icon={ARTIFACT_ICONS.policy}
-              title="The Guardrails"
-              description="Centralizes rules for errors, security, and performance"
+              title="Enforcing System-Wide Rules"
+              description="Centralizes rules for errors"
               color="#a855f7"
               isExpanded={expandedItem === 'policy'}
               onToggle={() => onToggleExpand('policy')}
@@ -349,8 +349,8 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
             <ExpandableArtifactItem
               artifactType="nfr"
               icon={ARTIFACT_ICONS.nfr}
-              title="The Guardrails"
-              description="Centralizes rules for errors, security, and performance"
+              title="Defining Quality"
+              description=" To make Non-Functional Requirements (like performance or security) a formal part of your spec"
               color="#eab308"
               isExpanded={expandedItem === 'nfr'}
               onToggle={() => onToggleExpand('nfr')}

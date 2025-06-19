@@ -17,7 +17,7 @@ export default function DDM2Page() {
 
   return (
     <div ref={containerRef} className="bg-gray-950 text-white">
-      <div className="flex" style={{ height: '400vh' }}>
+      <div className="flex">
         <div className="w-3/5 h-screen sticky top-0 self-start">
           <DDMVisualization onSceneChange={handleSceneChange} />
         </div>

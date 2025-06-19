@@ -111,7 +111,7 @@ const ExpandableArtifactItem: React.FC<ExpandableArtifactItemProps> = ({
       <div 
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{ 
-          maxHeight: isExpanded ? '500px' : '0px',
+          maxHeight: isExpanded ? '590px' : '0px',
           opacity: isExpanded ? 1 : 0
         }}
       >
@@ -398,11 +398,11 @@ export const ContentSections: React.FC<ContentSectionsProps> = ({
         <div className="max-w-lg">
           <h2 className="text-5xl font-bold mb-8 text-yellow-400 uppercase tracking-tighter">
             <p className='leading-[.8em]'>
-              <span className="text-3xl leading-[.1em]">Part 4: </span>
-              <span className='text-[2.85rem] leading-[.1em]'>The Metrics</span>
+              <span className="text-4xl leading-[.1em]">Part 4: </span>
+              <span className='text-[3.2rem] leading-[.1em]'>The Metrics</span>
             </p>
-            <p className="text-gray-200 text-[4.25rem] leading-[.77em] -ml-1">Measuring</p>
-            <p className="text-gray-200 text-[3.17rem] leading-[.77em]">What Matters</p>
+            <p className="text-gray-200 text-[4.9rem] leading-[.77em] -ml-1">Measuring</p>
+            <p className="text-gray-200 text-[3.67rem] leading-[.77em]">What Matters</p>
           </h2>
           <p className="text-lg text-gray-300 mb-6 leading-relaxed">
             Business value is the ultimate test of any system. KPIs connect your technical architecture to business outcomes, enabling powerful what-if analysis and data-driven decision making.

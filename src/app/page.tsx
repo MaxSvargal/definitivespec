@@ -28,7 +28,7 @@ export default function DDM2Page() {
       </div>
 
       {/* Section 6: The Cycle of Certainty */}
-      <div className="w-full bg-[#03070e] border-t border-gray-900 h-[80vh]">
+      <div className="w-full bg-[#03070e] border-t border-gray-900 min-h-[80vh]">
         <div className="container mx-auto px-8 py-32">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-8 text-yellow-500 uppercase tracking-tighter">
@@ -122,7 +122,7 @@ export default function DDM2Page() {
 
       {/* Section 7: The Disciplined Agent */}
       <div className="w-full bg-[#03070e] border-t border-gray-800">
-        <div className="container mx-auto px-8 py-40">
+        <div className="container mx-auto px-8 pt-40 pb-24">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-8 text-[#f97316] uppercase tracking-tighter">
             <p className='leading-[.8em]'>
@@ -136,7 +136,8 @@ export default function DDM2Page() {
           </h2>
             <p className="text-xl text-gray-300 mb-8 mt-16 max-w-4xl mx-auto leading-relaxed">
               Our agent is not a creative co-pilot; it's a <strong className="text-[#f97316]">disciplined executor</strong>. 
-              It's a new kind of tool—a computer within an LLM—that takes natural language requirements and raw ideas as input and produces precise specifications as output. You ready to start writing high-quality code.
+              <br/>It's a new kind of tool — a computer within an LLM, that takes natural language requirements and raw ideas as input and produces precise specifications as output. 
+              <br/>You ready to start writing high-quality code.
             </p>
           </div>
 
@@ -192,13 +193,13 @@ export default function DDM2Page() {
                 <code className="bg-gray-800 px-1 py-0.5 rounded text-xs" style={{ color: '#00B8FF' }}>directive</code> patterns that translate specs into code 
                 are your team's "cookbook." They are managed by your architects and governed by a formal process. We are so serious about this 
                 that we even have <code className="bg-gray-800 px-1 py-0.5 rounded text-xs" style={{ color: '#00B8FF' }}>test</code> specs 
-                <em>for the agent itself</em>, ensuring it complies with its own rules.
+                <em> for the agent itself</em>, ensuring it complies with its own rules.
               </p>
             </div>
           </div>
 
           {/* Call to Action */}
-          <div className="text-center mt-28">
+          <div className="text-center mt-[20vh]">
             {/* Action Buttons */}
             <div className="mt-16 flex justify-center items-center gap-4 flex-wrap">
                 <SocialButton

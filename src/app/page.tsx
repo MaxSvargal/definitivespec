@@ -209,7 +209,7 @@ export default function DDM2Page() {
           {/* Call to Action */}
           <div className="text-center mt-12 sm:mt-[20vh]">
             {/* Action Buttons */}
-            <div className="mt-8 sm:mt-16 flex justify-center items-center gap-3 sm:gap-4 flex-wrap">
+            <div className="pt-10 pb-10 sm:mt-16 flex justify-center items-center gap-8 sm:gap-4 flex-wrap">
                 <SocialButton
                   size="large"
                   Icon={Download}

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import './globals.css';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export default function RootLayout({
   children,
@@ -27,18 +28,11 @@ export default function RootLayout({
         <meta name="twitter:description" content="An AI-native development methodology that transforms precise specifications into verified, high-quality code. Stop debating ambiguity and ship with certainty."></meta>
         {/* <meta name="twitter:image" content="https://www.definitivespec.io/twitter-card-image.png"></meta> */}
         <meta name="twitter:site" content="@DefinitiveSpec"></meta>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H908D336DS"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window['dataLayer'].push(arguments)}
-          gtag('js', new Date());
-
-          gtag('config', 'G-H908D336DS');
-        </script>
       </head>
       <body>
         {children}
       </body>
+      <GoogleAnalytics gaId="G-H908D336DS" />
     </html>
   );
 } 

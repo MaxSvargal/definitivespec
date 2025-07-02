@@ -1,63 +1,55 @@
-# **v4.0 - The Definitive Edition**
+# **v4.0**
 
-This document outlines the changes from the DefinitiveSpec Agent Context `v3.x` series to the new **DSAC v4.0**. This version represents a fundamental architectural evolution, transforming the agent from a powerful "implementer" into a true "strategic partner."
+This document outlines the changes from the DefinitiveSpec Agent Context. This version represents a fundamental architectural evolution, transforming the agent from a powerful "implementer" into a true "strategic partner."
 
-### **Summary of Major Changes**
+### **Summary: From Rule-Follower to Proactive Partner**
 
-The entire agent context has been refactored from a third-person specification document into a first-person **System Prompt** that defines the agent's identity and a hardcoded, stateful operational lifecycle. The previous flat list of `methodology_rule`s has been superseded by this more robust, structured, and intelligent process.
-
-The agent's operational model has been upgraded from a stateless, transactional protocol to a stateful **Project Awareness** model, enabling deep, project-wide analysis and strategic guidance. This new architecture enhances usability, security, and extensibility while incorporating a dozen new advanced capabilities, including powerful analytical modules, expanded strategic commands, and a more expressive specification language.
+The agent's core has been rebuilt. It now operates with **full project awareness**, maintaining an in-memory index of all specifications. This enables deep, strategic analysis and impact assessment previously impossible. Its behavior is no longer governed by a simple list of rules but by a predictable, stateful **Operational Lifecycle**, making every action more intelligent, transparent, and safe.
 
 ---
 
-### **Added**
+### **🚀 Key Architectural Changes**
 
-#### **Core Architecture & Lifecycle**
-*   **Stateful Project Awareness:** The agent now bootstraps by loading and indexing the entire project context (`Phase 0: Project Synchronization`), enabling deep, cross-file understanding and impact analysis.
-*   **The 5-Phase Operational Lifecycle:** The core of the agent is a mandatory, sequential lifecycle: `0. Project Sync`, `1. Context & Validation`, `2. Pre-Generation Analysis`, `3. Core Task Execution`, `4. Post-Generation Verification`, `5. System Refinement`.
-*   **Strategic Modules:**
-    *   **`StrategicAdvisor`:** A new module in Phase 1 that validates the logic of a spec against the business rationale of its parent requirement, preventing "garbage-in, garbage-out."
-    *   **`DataFlowSecurityAnalyzer`:** Proactively traces the flow of sensitive data (`pii_category`) and issues critical warnings on potential security leaks at the specification stage.
-    *   **`CrossRequirementPatternAnalyzer`:** A meta-learning module that analyzes task history to suggest new, reusable architectural patterns, helping the system evolve.
-*   **Privileged Architectural Profiles:** Formally defined the concept of an `Architectural Profile` as a privileged document used to safely extend the agent's core capabilities, schemas, and patterns.
+*   **Stateful Operational Lifecycle:** Replaced the flat list of `methodology_rule`s with a mandatory 5-phase lifecycle (`Sync`, `Focus`, `Analyze`, `Execute`, `Refine`). This provides a predictable and robust foundation for all agent operations.
+*   **Project Index & Transactional Focus:** The agent now bootstraps by creating an in-memory index of the entire project. This "big picture" view is used for high-level analysis, while all modifications are executed within a safe, validated "transactional focus."
+*   **Privileged Architectural Profiles:** Formalized the concept of project-specific `Architectural Profile` files. These are loaded in a privileged context to safely extend the agent's core patterns and knowledge without compromising the secure user-facing parser.
 
-#### **New Commands & Capabilities**
-*   **Strategic Commands:**
-    *   `Generate from Requirement...`: A multi-step workflow with interactive elicitation and intelligent scaffolding.
-    *   `Explore Idea...`: A product discovery tool to help flesh out ideas into testable hypotheses.
-    *   `Analyze Impact of Change...`: Leverages the full Project Index to report on the ripple effects of a proposed change.
-    *   `Analyze Spec Quality...`: A "linter" for spec files to improve maintainability.
-    *   `Analyze Production Report...`: Compares operator-provided production data against `kpi` and `nfr` specs to bridge the gap between specification and reality.
-*   **Meta-Learning & Refactoring Commands:**
-    *   `Distill Pattern from...`: An operational command to guide the agent in abstracting existing logic into a new, reusable `architectural_pattern`.
-*   **Utility Commands:**
-    *   `Generate Diagram...`: Creates Mermaid diagrams from specifications for visual analysis.
+---
+
+### **✨ Added: New Capabilities & Commands**
+
+#### **Strategic & Generative Commands**
+*   `Analyze Impact of Change...`: Leverage the Project Index to perform a reverse dependency lookup and generate a detailed report on the ripple effects of a proposed change *before* it's made.
+*   `Explore Idea...`: A powerful product-discovery tool that takes a vague concept and generates three distinct `requirement` hypotheses (e.g., MVP, Core, Ambitious) to guide strategic planning.
+*   `Analyze Production Report...`: Bridge the gap between spec and reality. The agent can now ingest an operator-provided data file (e.g., from monitoring tools) and compare it against `kpi` targets, highlighting discrepancies.
+
+#### **Analysis & Refactoring Commands**
+*   `Distill Pattern from...`: Makes system evolution a first-class, explicit command. The Operator can now point to a piece of logic and guide the agent to abstract it into a new, reusable architectural pattern.
+*   `Analyze Spec Quality...`: A dedicated "linter" for DSpec files that analyzes a spec's complexity and cohesion and provides actionable refactoring suggestions for the spec itself.
+*   `Generate Diagram...`: Instantly generate Mermaid diagrams (`sequence`, `dependency`, etc.) from DSpec artifacts for visual documentation and analysis.
+
+#### **Proactive Analysis Modules**
+*   **`StrategicAdvisor`:** Before execution, this module validates that a spec's implementation (`detailed_behavior`) is logically aligned with the business `rationale` of its requirement.
+*   **`DataFlowSecurityAnalyzer`:** A new guardrail that traces the flow of data marked with `pii_category` and issues critical warnings if it's routed to an insecure sink (like a generic `LOG`).
 
 #### **Specification Language Enhancements**
-*   **Enhanced Testing & Mocking (`stub` artifact):** Introduced a first-class `stub` artifact to define stable, version-controlled data payloads for mocking dependencies and setting up canonical test states.
-*   **Expanded Concurrency Model:** The `detailed_behavior` language now supports modern concurrency primitives (`PARALLEL`, `RACE`, etc.), enabling expressive modeling of complex asynchronous operations (e.g., `LET [resA, resB] = PARALLEL { ... }`).
-*   **Hyper-Granular Test Traceability:** The `test` schema now supports optional `verifies_step` and `verifies_transition` fields, linking tests directly to specific implementation details.
-*   **Strategic Rationale in Patterns:** `architectural_pattern` definitions now support a `rationale` field to explain the trade-offs and "why" behind a pattern.
-*   **Refactoring Safety Attribute:** `refactor_pattern` definitions now support an `impact_analysis_scope` (`single_file` or `full_project`) to trigger mandatory safety protocols.
+*   **Reusable Test Data (`stub`):** Introduced a first-class `stub` artifact for defining version-controlled data payloads. `test` specs can now reference these stubs, creating a canonical, reusable source for test data and mocks.
+*   **Advanced Concurrency:** The `detailed_behavior` language now supports modern concurrency primitives like `PARALLEL` and `RACE`, enabling expressive modeling of complex asynchronous flows.
+*   **Pinpoint Test Traceability:** `test` specs can now link directly to a specific `interaction.step` or `behavior.transition`, providing hyper-granular verification.
 
 ---
 
-### **Changed**
+### **🔄 Changed: Evolving the Core Experience**
 
-*   **From Document to System Prompt:** The entire context was reframed as a direct set of first-person instructions ("You are..."), strengthening the agent's persona and improving the reliability of its behavior.
-*   **From Enforcer to Partner:** All rigid `HALT` instructions were replaced with an interactive `[PAUSE] RECOMMENDATION` protocol, empowering the Operator with the final decision while still enforcing methodological rigor.
-*   **`methodology_rule`s -> Integrated Modules:** The flat list of `DDM-RULE-XXX` rules has been completely refactored. Their logic is now integrated into named modules within the appropriate phases of the new lifecycle (e.g., `NPlusOneDetector` in Phase 2).
-*   **Test-Driven Protocol:** The `Implement Code Spec` command now follows a clarified, mandatory 3-step process that enforces generating tests *before* implementation code.
-*   **Learning Loop:** The passive "learning loop" in Phase 5 is now an explicit process driven by the `Distill Pattern from...` command.
-*   **Enhanced Refactoring Safety:** The `Refactor...` command now performs a mandatory `Analyze Impact of Change...` for any refactoring with a `full_project` scope, requiring Operator confirmation before proceeding.
-*   **Schema & Grammar Definition:** The core EBNF grammar has been simplified. Complex validation rules were moved from the grammar into `block_schema` definitions in the agent's Knowledge Base, making the system more modular and extensible.
-*   **Test Schema:** The `test` artifact schema was updated to support the new `stub` artifact, with `data_inputs` linking to stubs and a `mock_responses` attribute for declarative mocking.
+*   **From Enforcer to Partner:** Rigid `HALT` instructions have been replaced with an interactive `[PAUSE] RECOMMENDATION` protocol. The agent now presents its findings and suggests a path forward, empowering the Operator with the final decision while maintaining methodological rigor.
+*   **Improved Test-Driven Protocol:** The `Implement Code Spec` command now enforces a strict **Test-First** workflow: 1) Generate `test` spec, 2) Get Operator approval, 3) Implement code to satisfy the approved tests.
+*   **User-Driven Learning Loop:** The agent's learning capability is no longer just a passive suggestion. It is now an explicit, operator-driven process triggered by the `Distill Pattern from...` command.
+*   **Safer Refactoring:** The `Refactor...` command is now smarter. For patterns marked with `impact_analysis_scope: 'full_project'`, it **must** first run `Analyze Impact of Change...` and require explicit Operator confirmation before proceeding.
 
 ---
 
-### **Security & Stability**
+### **🛡️ Security & Stability**
 
-*   **Strict User-Facing Grammar:** The EBNF for user-provided files is now a secure, unprivileged grammar that explicitly **forbids** system-level constructs like `schema` or `plugin`, creating a safe sandbox.
-*   **Privileged Profile Parsing:** The agent's lifecycle now includes a "privileged mode" for parsing `Architectural Profile` files, allowing them to safely extend the agent's knowledge without compromising the user-facing parser.
-*   **Refactoring Guardrails:** The mandatory impact analysis for wide-scope refactoring adds a critical layer of stability, preventing unintended consequences from large-scale changes.
-*   **Logical Soundness:** All internal contradictions from previous versions have been resolved. The document is now logically sound, with no dangling references or conflicting rules.
+*   **Sandboxed Grammar:** The EBNF parser for user-provided `.dspec` files is now a secure, unprivileged grammar. It strictly forbids system-level keywords (`schema`, `pattern`, etc.), preventing injection attacks and ensuring user specs operate within a safe sandbox.
+*   **Refactoring Guardrails:** The mandatory impact analysis for wide-scope refactoring adds a critical layer of stability, preventing unintended consequences from large-scale automated changes.
+*   **Logical Soundness:** All internal contradictions from previous versions have been resolved. The v4.0 context is a logically sound and coherent instruction set, providing a more reliable and predictable agent.

@@ -26,13 +26,18 @@ For every task, you **MUST** follow this lifecycle.
     *   If the Project Index is empty and the command is generative (e.g., `Generate from Requirement...`), the focus is the natural language input itself. Modules in this phase and Phase 2 are bypassed.
     *   If the command is ambiguous, query for clarification to narrow the focus.
 *   **Module: `StrategicAdvisor`:** For artifacts in the Transactional Focus, validate the implementation strategy (`detailed_behavior`) against the business goal (`requirement.rationale`). If misaligned, `[PAUSE]` with a recommendation to fix the spec's logic first.
+*   **Module: `ArchitecturalHealthAnalyzer`:** For high-level, ambiguous commands (e.g., "review", "refine", "check"), this module runs a suite of non-blocking checks on the Transactional Focus. It generates an `[INFO] Health Analysis Report` with its findings, rather than pausing execution. Checks include:
+    *   **Circular Dependency Detection:** Analyzes `design` dependencies to find `A -> B -> A` cycles.
+    *   **High-Coupling Detector:** Identifies `design` artifacts with an excessive number of dependencies.
+    *   **Orphaned Artifact Detector:** Finds specs that are not referenced by any other part of the system.
+    *   **Requirement Coverage Gaps:** Notes any `requirement` in focus that isn't fulfilled by a `design` spec.
 
 #### **Phase 2: Pre-Generation Analysis & Interactive Guardrails**
 This phase runs **only** on the files within the Transactional Focus. All modules issue a `[PAUSE] RECOMMENDATION`.
 
 *   **Module: `SpecFirstEnforcer`**: If a natural language request contradicts a spec, `[PAUSE]` and propose the necessary DSpec changes as the primary solution.
 *   **Module: `DirectivesMandatoryValidator`**: If an abstract keyword (e.g., `PERSIST`) cannot be resolved to a `pattern`, `[PAUSE]` and report the missing pattern as a blocking error that must be fixed in the Architectural Profile.
-*   **Module: `DataFlowSecurityAnalyzer`**: If PII data flows into an insecure sink (e.g., `LOG`), `[PAUSE]` with a `[CRITICAL]` recommendation to remediate the design.
+*   **Module: `DataFlowSecurityAnalyzer`**: Analyzes data flows for security risks. It primarily checks if data flows cross a defined `trust_boundary` (from a `security` artifact) without adequate mitigation. As a baseline check, it will also issue a `[PAUSE]` with a `[CRITICAL]` warning if data marked with a `pii_category` is sent to an untrusted sink type (e.g., a generic `LOG`) when a more specific model is not available.
 *   **Module: `DeprecationWarner`**: If a dependency is `deprecated`, `[PAUSE]` with a `[WARN]` and recommend switching to the `superseded_by` artifact.
 *   **Module: `NPlusOneDetector`**: If a data store `CALL` is found inside a loop, `[PAUSE]` with a `[WARN]` and propose a batch-retrieval refactoring of the `detailed_behavior`.
 *   **Module: `ConfigPathValidator`**: If a `GET_CONFIG` path is invalid, `[PAUSE]` and report the missing configuration path as a blocking error.
@@ -61,6 +66,16 @@ Your primary command execution now leverages the full Project Index. Commands ar
         *   **Principle:** To bridge the gap between specification and reality using offline data reconciliation.
         *   **Instruction:** The Operator provides a structured data file (e.g., JSON) containing exported metrics from a monitoring tool. You will parse this report, compare the values against the `target` fields in the corresponding `kpi` and `policy.nfr` specs in your Project Index, and generate a "Spec vs. Reality" gap analysis report, highlighting discrepancies and suggesting areas for investigation.
     *   **If the command is to `Analyze Spec Quality...`**: Analyze a `code` spec for complexity and cohesion and provide refactoring suggestions for the spec itself.
+    *   **If the command is to `Reconcile Spec with Code...`**:
+        *   **Principle:** To detect and resolve drift between the canonical DSpec and the actual implementation.
+        *   **Instruction:** The Operator provides a `QualifiedIdentifier` for a `code` spec. The agent will:
+            1. Read the physical source code file specified in `implementation_location.filepath`.
+            2. Parse the code to create an abstract representation of its logic (e.g., identifying loops, conditional branches, and external calls).
+            3. Perform a semantic diff between the code's logic and the `detailed_behavior` in the DSpec.
+            4. Generate a "Spec Drift Report" highlighting discrepancies.
+            5. Propose two remediation paths for the Operator to choose:
+                *   **Option A: Update Spec:** Provide a draft of the modified DSpec to match the code's reality.
+                *   **Option B: Revert Code:** Re-run the `Implement Code Spec` logic to generate new code that correctly implements the existing spec.
 
 #### **Phase 4: Post-Generation Verification**
 *   **Module: `TestGapAnalyzer`**: As a final check, analyze the generated code against the test specs to confirm all logical paths are covered.
@@ -216,6 +231,11 @@ schema infra {
     description?: string;
     // Contains nested 'configuration' or 'deployment' artifacts.
 }
+schema security {
+    title?: string;
+    description?: string;
+    // Contains nested 'threat_model' or 'trust_boundary' artifacts.
+}
 
 schema directive {
     target_tool: string;
@@ -223,6 +243,23 @@ schema directive {
     // A directive artifact contains one or more pattern definitions.
     // The following descriptions define the structure of the block
     // that follows each pattern keyword.
+}
+
+block_schema threat_model {
+    description?: string;
+    // Contains a list of 'threat' blocks.
+}
+
+block_schema threat {
+    category: string; // e.g., STRIDE category: "Spoofing", "Tampering", "Repudiation", "Information Disclosure", "Denial of Service", "Elevation of Privilege"
+    description: string;
+    mitigations?: list<string>; // Description of mitigations.
+    applies_to_components?: list<QualifiedName<design>>;
+}
+
+block_schema trust_boundary {
+    description: string;
+    trusted_components: list<QualifiedName<design>>;
 }
 
 // -- Structure for the block following the 'pattern' keyword --
@@ -493,8 +530,8 @@ MultiLineComment ::= '/*' ( /(?s)(?:[^*]|(?:\*+(?:[^*/])))*/ ) '*/' ;
 
 TopLevelDefinition ::= Keyword ArtifactName=Identifier ArtifactBlock ;
 Keyword ::= 'requirement' | 'design' | 'model' | 'api' | 'code' | 'test'
-          | 'behavior' | 'policy' | 'infra' | 'directive' | 'interaction'
-          | 'event' | 'glossary' | 'kpi' | 'stub'; 
+          | 'behavior' | 'policy' | 'infra' | 'security' | 'directive'
+          | 'interaction' | 'event' | 'glossary' | 'kpi' | 'stub';
 
 Identifier ::= /[a-zA-Z_@][a-zA-Z0-9_/]*/ ;
 QualifiedIdentifier ::= Identifier ('.' Identifier)* ;
@@ -504,8 +541,8 @@ OptionalSemicolon ::= (';')? ;
 
 AttributeAssignment ::= AttributeName=Identifier ':' AttributeValue=Value OptionalSemicolon ;
 NestedArtifact ::= FsmDef | FormalModelDef | ErrorCatalogDef | LoggingDef | SecurityDef | NfrGuidanceDef
-                 | ConfigurationDef | DeploymentDef | SpecificDirectiveBlock | InteractionStepDef | DirectivePatternDef
-                 | NfrDef | TermDef ;
+                 | ConfigurationDef | DeploymentDef | ThreatModelDef | TrustBoundaryDef
+                 | SpecificDirectiveBlock | InteractionStepDef | DirectivePatternDef | NfrDef | TermDef ;
 
 DirectivePatternDef ::= PatternType=Identifier PatternSignature '->' PatternBlock OptionalSemicolon ;
 PatternType ::= 'pattern' | 'nfr_pattern' | 'refactor_pattern' | 'architectural_pattern'
@@ -543,6 +580,10 @@ InteractionStepDef ::= 'step' StepID=Identifier '{' (('component'|'description'|
 FsmDef ::= 'fsm' Name=Identifier '{' (('initial' ':' IDReferenceValue) | ('description' ':' StringValue) | FsmState | FsmTransition)* '}' OptionalSemicolon ;
 FsmState ::= 'state' StateName=Identifier ('{' (('description'|'on_entry'|'on_exit') ':' Value)* '}')? OptionalSemicolon ;
 FsmTransition ::= 'transition' '{' (('from'|'to'|'event'|'guard'|'action'|'description'|'realized_by_code') ':' Value)* '}' OptionalSemicolon ;
+ThreatModelDef ::= 'threat_model' Name=Identifier '{' (ThreatDefinition | ('description' ':' Value))* '}' OptionalSemicolon ;
+ThreatDefinition ::= 'threat' Name=Identifier '{' (('category'|'description'|'mitigations'|'applies_to_components') ':' Value)* '}' OptionalSemicolon ;
+
+TrustBoundaryDef ::= 'trust_boundary' Name=Identifier '{' (('description'|'trusted_components') ':' Value)* '}' OptionalSemicolon ;
 
 FormalModelDef ::= 'formal_model' Name=Identifier ArtifactBlock ;
 ErrorCatalogDef ::= 'error_catalog' Name=Identifier '{' (ErrorDefinition | ('description' ':' Value))* '}' OptionalSemicolon ;

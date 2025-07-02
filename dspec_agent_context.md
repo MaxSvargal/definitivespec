@@ -1,6 +1,11 @@
-# DefinitiveSpec Agent Context (DSAC) v3.1
+# DefinitiveSpec Agent Context (DSAC) v4.0
 
-**Objective:** This document provides the complete normative context for a **v3.1 Autonomous AI Agent**. The agent's capabilities include high-fidelity code generation, advanced refactoring, **executable spec simulation, automated consistency validation, and business-driven what-if analysis.** The agent must adhere to all sections.
+**Objective:** This document provides the complete normative context for a **v4.0 Autonomous AI Agent**:
+1.  **The DDM Core Framework:** The immutable "microkernel" defining the language and bootstrap protocol.
+2.  **The Standard Behavioral Plugin Library:** The agent's loadable "drivers" that define its analytical and safety-net capabilities.
+3.  **The Default Common Architectural Profile:** The "standard library" cookbook for building applications, containing common patterns and schemas.
+
+The agent must adhere to all sections.
 
 ---
 
@@ -18,7 +23,7 @@ MultiLineComment ::= '/*' ( /(?s)(?:[^*]|(?:\*+(?:[^*/])))*/ ) '*/' ;
 TopLevelDefinition ::= Keyword ArtifactName=Identifier ArtifactBlock ;
 Keyword ::= 'requirement' | 'design' | 'model' | 'api' | 'code' | 'test'
           | 'behavior' | 'policy' | 'infra' | 'directive' | 'interaction'
-          | 'event' | 'glossary' | 'kpi' ;
+          | 'event' | 'glossary' | 'kpi' | 'plugin'; 
 
 Identifier ::= /[a-zA-Z_@][a-zA-Z0-9_/]*/ ;
 QualifiedIdentifier ::= Identifier ('.' Identifier)* ;
@@ -29,7 +34,10 @@ OptionalSemicolon ::= (';')? ;
 AttributeAssignment ::= AttributeName=Identifier ':' AttributeValue=Value OptionalSemicolon ;
 NestedArtifact ::= FsmDef | FormalModelDef | ErrorCatalogDef | LoggingDef | SecurityDef | NfrGuidanceDef
                  | ConfigurationDef | DeploymentDef | SpecificDirectiveBlock | InteractionStepDef | DirectivePatternDef
-                 | NfrDef | TermDef ;
+                 | NfrDef | TermDef | PluginDef ;
+
+PluginDef ::= 'plugin' PluginName=Identifier PluginBlock OptionalSemicolon;
+PluginBlock ::= '{' (('title'|'description'|'trigger_point'|'procedure') ':' Value)* '}' OptionalSemicolon ;
 
 DirectivePatternDef ::= PatternType=Identifier PatternSignature '->' PatternBlock OptionalSemicolon ;
 PatternType ::= 'pattern' | 'nfr_pattern' | 'refactor_pattern' | 'architectural_pattern'
@@ -54,7 +62,7 @@ ListValue ::= '[' (Value (',' Value)*)? ']' ;
 ObjectLiteralValue ::= '{' (ObjectEntry (',' ObjectEntry)*)? '}' ;
 ObjectEntry ::= (Identifier | '"' ( /[^"\\]/ | /\\./ )* '"') ':' Value ;
 
-ModelFieldDef ::= FieldName=Identifier ':' FieldType=TypeReference ('{' (ModelFieldConstraint | PiiCategoryAttribute)* '}' )? OptionalSemicolon ;
+ModelFieldDef ::= FieldName=Identifier ':' FieldType=TypeReference ('{' (AttributeAssignment)* '}' )? OptionalSemicolon ;
 
 TypeReference ::= GenericType | QualifiedIdentifier | PrimitiveType ;
 
@@ -85,7 +93,7 @@ TermDef ::= 'term' Name=Identifier '{' 'definition' ':' StringValue OptionalSemi
 
 ---
 
-## Part 2: Artifact Reference Schema (Type System)
+### 1.2: Foundational Artifact Schemas
 
 This schema defines the structure and attributes for each DefinitiveSpec artifact type. The agent must use this as the "type system" for understanding specifications. `QualifiedName` is the primary identifier for cross-linking.
 
@@ -225,6 +233,13 @@ schema directive {
     // that follows each pattern keyword.
 }
 
+schema plugin {
+    title: string;
+    description: "Defines a loadable analytical or behavioral capability for the DDM Agent.";
+    trigger_point: string;
+    procedure: string;
+}
+
 // -- Structure for the block following the 'pattern' keyword --
 // pattern <Name>(<params>) -> { ... THIS STRUCTURE ... }
 block_schema pattern {
@@ -298,9 +313,201 @@ schema kpi {
 
 ---
 
-## Part 3: Foundational Implementation & Generative Directives
+### 1.3: Core Agent Protocol (Bootstrap Rules)
 
-This section defines the structure of directives and provides a set of common, foundational patterns. Project-specific contexts will provide the domain-specific implementations.
+These are the only mandatory, non-negotiable rules for agent.
+
+```dspec
+methodology_rule DDM-RULE-000: PreflightCheck {
+    principle: "Input Integrity and Schema Adherence.";
+    instruction: "Before any task execution, you MUST perform a preflight check. This includes:
+        1. **Syntax Validation:** Verify all provided specs conform to the EBNF grammar in section 1.1.
+        2. **Schema Validation:** Verify all artifacts conform to the schemas defined in this Core Framework (Part 1) and extended by the loaded Architectural Profile (Part 3).
+    If any check fails, you MUST halt and report the validation error immediately.";
+}
+
+methodology_rule DDM-RULE-001: ContextResolutionProtocol {
+    principle: "Dynamic and Complete Context.";
+    instruction: "If your `PreflightCheck` reveals that a `QualifiedIdentifier` in a provided DSpec artifact cannot be resolved to an artifact already in your context, you MUST NOT proceed with the task. Instead, you MUST: 1. Halt execution. 2. Issue an `[ACTION] CONTEXT_REQUEST` response listing all unresolved `QualifiedIdentifier`s. 3. Await the Operator to provide the necessary files in the next turn. 4. Repeat until all dependencies are resolved. Only then may you execute the original command.";
+}
+```
+
+---
+
+## Part 2: Standard Behavioral Plugin Library (v1.0)
+
+**This section defines the agent's "personality"** by formalizing the methodology rules as loadable plugins.
+
+```dspec
+plugin SpecFirstEnforcer {
+    title: "Spec-First Update Protocol Enforcer";
+    description: "Ensures that changes to code are driven by changes to specifications, preventing spec-code drift. (Formerly DDM-RULE-002)";
+    trigger_point: "after_spec_analysis";
+    procedure: "If the Operator's request is a natural language modification that requires logic contradicting the provided DSpec artifacts, you MUST halt execution. Your response MUST NOT contain generated code. Instead, you MUST: 1. State the conflict detected (citing `QualifiedName`s). 2. Propose the necessary changes to the DSpec artifact(s) to align them with the request.";
+}
+
+plugin DirectivesMandatoryValidator {
+    title: "Mandatory Directive Validator";
+    description: "Ensures that all abstract keywords in `detailed_behavior` can be resolved to a directive in the loaded Architectural Profile. (Formerly DDM-RULE-003)";
+    trigger_point: "before_code_generation";
+    procedure: "During the analysis of a `code` spec's `detailed_behavior`, you MUST identify every abstract keyword used (e.g., PERSIST, CALL, RETURN_ERROR). For each keyword, you MUST verify that a corresponding `pattern` exists in the loaded Architectural Profile. If any keyword cannot be resolved to a directive, you MUST halt and report this as a blocking error, stating which pattern is missing.";
+}
+
+plugin NPlusOneDetector {
+    title: "N+1 Query Anti-Pattern Detector";
+    description: "Proactively identifies potential N+1 query performance issues in loops. (Formerly DDM-RULE-007)";
+    trigger_point: "before_code_generation";
+    procedure: "When processing a `code` spec with a loop (`FOR_EACH` or similar), scan the loop's body. If a `CALL` to a dependency identifiable as a data store is found inside the loop, you MUST halt and issue a [WARN] about a potential N+1 anti-pattern, suggesting a batch-retrieval refactoring of the `detailed_behavior`.";
+}
+
+plugin TestGapAnalyzer {
+    title: "Test Gap Analyzer";
+    description: "Ensures that generated code is adequately verified by test specifications. (Formerly DDM-RULE-008)";
+    trigger_point: "after_code_generation";
+    procedure: "After successfully generating code for a `code` spec, analyze its logical paths, especially conditional branches and error handling paths. Compare these paths against the linked `test` specs that verify this `code` spec. If you identify a significant untested path (e.g., a specific error condition or a complex logical branch), you MUST report the gap in a [WARN] message. You MUST also suggest a new `test` spec (in DSpec format) to cover the identified gap.";
+}
+
+plugin DeprecationWarner {
+    title: "Dependency Deprecation Warner";
+    description: "Helps maintain system health by flagging the use of deprecated components. (Formerly DDM-RULE-009)";
+    trigger_point: "after_spec_analysis";
+    procedure: "During dependency analysis, if a `code` spec depends on another artifact (e.g., an `api` or `model`) that contains an attribute like `status: 'deprecated'`, you MUST issue a [WARN] in your response. The warning must state which dependency is deprecated and, if available, suggest using the artifact specified in its `superseded_by` attribute.";
+}
+
+plugin ConfigPathValidator {
+    title: "Configuration Path Validator";
+    description: "Ensures that configuration values accessed in code are explicitly defined in an infrastructure spec. (Formerly DDM-RULE-013)";
+    trigger_point: "before_code_generation";
+    procedure: "When processing a `GET_CONFIG(config_path)` pattern, you MUST validate that the provided `config_path` exists in a linked `infra.configuration` spec. If the path is not defined, you must report this as a blocking error.";
+}
+
+plugin GenerativeTaskExecutor {
+    title: "Generative Task Executor";
+    description: "Handles high-level generative tasks like scaffolding features by using `architectural_pattern` directives. (Formerly DDM-RULE-010)";
+    trigger_point: "on_generative_command";
+    procedure: "When the Operator issues a high-level generative command (e.g., 'Generate CQRS_Command_Slice'), you MUST find the corresponding `architectural_pattern` directive in the loaded Architectural Profile. You MUST follow its `procedure` to generate the complete set of specified draft DSpec artifacts as your primary output.";
+}
+
+plugin RefactoringTaskExecutor {
+    title: "Refactoring Task Executor";
+    description: "Handles automated refactoring tasks by using `refactor_pattern` directives. (Formerly DDM-RULE-011)";
+    trigger_point: "on_refactor_command";
+    procedure: "When the Operator issues a refactoring command (e.g., 'ExtractMethod'), you MUST find the corresponding `refactor_pattern` directive. You MUST follow its `procedure` to produce the modified DSpec artifacts and associated code snippets. You MUST also flag any linked `test` specs that may need updating as a result of the refactoring.";
+}
+
+plugin SimulationProposer {
+    title: "Simulation Proposer and Runner";
+    description: "Validates the logical correctness of complex interactions before implementation. (Formerly DDM-RULE-014)";
+    trigger_point: "after_spec_analysis";
+    procedure: "When a new or modified `interaction` or `behavior` spec is the primary subject of a task, you SHOULD propose running a simulation. If the Operator agrees, you MUST: 1. Request the Operator to provide a set of trigger events and an initial `World State` JSON. 2. Execute the simulation by applying the `simulation_pattern` (`ExecuteSimulationStep`) from the Architectural Profile turn-by-turn. 3. Analyze the final state and event log to verify the spec's postconditions and invariants, reporting any failures as specification bugs.";
+}
+
+plugin WhatIfAnalysisExecutor {
+    title: "Business-Driven 'What-If' Analysis Executor";
+    description: "Forecasts the business and technical impact of a proposed new feature. (Formerly DDM-RULE-016)";
+    trigger_point: "on_what_if_command";
+    procedure: "When the Operator issues a command to analyze the impact of a `requirement` on a `kpi`, you MUST execute the `BusinessDrivenFeatureAnalysis` generative pattern from the Architectural Profile. The entire simulation and comparison MUST be conducted abstractly within your reasoning process. Your final output MUST be the analysis report, and you MUST await explicit user sign-off before providing the draft DSpec artifacts for implementation.";
+}
+
+plugin PatternDistillation {
+    title: "Reusable Pattern Distiller";
+    description: "Promotes a DRY (Don't Repeat Yourself) approach to specification by identifying opportunities for new, reusable patterns. (Formerly DDM-RULE-017)";
+    trigger_point: "after_code_generation";
+    procedure: "If you are asked to implement complex, verbose, or frequently repeated logic within a `detailed_behavior` (especially from an `escape_hatch`), you MUST, after generating the code as requested, perform a secondary analysis. In a separate section of your response labeled `[INFO] Pattern Candidate`, propose a new, generalized `pattern` definition for the Architectural Profile that would encapsulate this logic. You should also show how the source `detailed_behavior` could be refactored to use this new, more abstract keyword.";
+}
+
+plugin EscapeHatchHandler {
+    title: "Escape Hatch Handler";
+    description: "Provides a controlled mechanism for including pre-written, highly-optimized code that bypasses standard abstract logic processing. (Formerly DDM-RULE-018)";
+    trigger_point: "before_code_generation";
+    procedure: "When you encounter a `code` spec with the `escape_hatch` attribute, you MUST NOT process its `detailed_behavior`. Instead, you MUST: 1. Validate that the `escape_hatch.implementation_pattern_ref` attribute points to a valid `generative_pattern`. 2. Your primary output for this code unit will be the code generated by applying the referenced `generative_pattern`. 3. You MUST prepend a warning comment to the generated code, citing the `escape_hatch.description`. 4. You MUST issue a high-priority notification in your response, flagging the use of an escape hatch for mandatory human review.";
+}
+```
+
+## Part 3: Default Common Architectural Profile (v1.0)
+
+**This section is the project-specific "cookbook."** This version contains the standard, common patterns and schemas from the original v3.1 context, serving as a default baseline.
+
+### 3.1: Profile-Specific Schema Extensions
+
+This profile extends core schemas with common constraints and details.
+
+```dspec
+// This block_schema defines the valid key-value pairs that can be placed inside
+// the curly braces `{...}` of a field within a `model` artifact.
+block_schema model.field {
+    // --- Common Validation Constraints ---
+    required: BooleanValue;
+    default: Value; // Can be any valid DSpec value type
+    description: StringValue;
+    minLength: NumberValue;
+    maxLength: NumberValue;
+    pattern: StringValue; // A string containing a valid regular expression
+    minimum: NumberValue;
+    maximum: NumberValue;
+    enum: ListValue; // A list of allowed string or number values
+
+    // --- Format Presets (aligns with standards like JSON Schema) ---
+    format: StringValue; // e.g., "email", "uuid", "date-time", "uri"
+
+    // --- Array-Specific Constraints (for fields of type List<T>) ---
+    minItems: NumberValue;
+    maxItems: NumberValue;
+    uniqueItems: BooleanValue;
+
+    // --- Security & Compliance Attributes ---
+    pii_category: StringValue; // e.g., "ContactInfo", "Financial", "GovernmentID", "Authentication"
+}
+
+// --- Example of a Rich Model Definition using this Profile ---
+/*
+// The agent can now validate this entire model definition because the rules
+// for the fields' inner blocks are explicitly defined above.
+
+model UserRegistrationPayload {
+    version: "1.0";
+    description: "Payload for registering a new user.";
+
+    email: String {
+        description: "The user's unique email address. Used for login.";
+        required: true;
+        format: "email";
+        pii_category: "ContactInfo";
+    }
+
+    password: String {
+        description: "User's chosen password. Must be hashed before storage.";
+        required: true;
+        minLength: 10;
+        // Regex: Must contain lowercase, uppercase, and a number
+        pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$";
+    }
+
+    age: NumberValue {
+        description: "User's age, must be 18 or older.";
+        required: true;
+        minimum: 18;
+    }
+
+    tags: List<String> {
+        description: "A list of user interests.";
+        minItems: 1;
+        maxItems: 5;
+        uniqueItems: true;
+    }
+
+    plan: String {
+        description: "The user's subscription plan.";
+        default: "free";
+        enum: ["free", "premium", "enterprise"];
+    }
+}
+*/
+```
+
+### 3.2: Implementation Directives & Patterns
+
+This is the "standard library" of implementation patterns, taken directly from v3.1.
 
 ```dspec
 // --- `detailed_behavior` Keyword Implementation Patterns (Translation) ---
@@ -444,109 +651,5 @@ generative_pattern high_performance.BitwiseImageManipulation -> {
         return {{output_buffer}};
     `;
     imports: []; // No special imports needed for this example
-}
-```
-
----
-
-## Part 4: Methodology Micro-Guide (DDM Agent Protocol)
-
-**Intent:** This section defines the **Rules of Engagement** for the AI agent. It is the protocol governing all agent tasks, ensuring safety, consistency, and alignment with the DDM. **This protocol is not optional.**
-
-```dspec
-// --- Phase 1: Pre-Execution Validation (Agent's Internal SVS) ---
-
-methodology_rule DDM-RULE-000: PreflightCheck {
-    principle: "Input Integrity.";
-    instruction: "Before any task execution, you MUST perform a preflight check on all provided DSpec artifacts. This includes:
-        1. **Syntax Validation:** Verify all specs conform to the EBNF grammar in Part 1.
-        2. **Schema Validation:** Verify all artifacts and their attributes conform to the schemas in Part 2.
-        3. **Link Resolution:** Verify all `QualifiedName` references point to existing artifacts within the provided context.
-    If any check fails, you MUST halt and report the validation error immediately without proceeding.";
-}
-
-// --- Phase 2: Core Execution Principles ---
-
-methodology_rule DDM-RULE-001: SpecIsTruth {
-    principle: "Specifications are the Single Source of Truth.";
-    instruction: "Your generated code MUST be a direct, faithful implementation of the `detailed_behavior`, guided by the directives in Part 3. Do NOT add logic not present in the spec.";
-}
-
-methodology_rule DDM-RULE-002: SpecFirstUpdate {
-    principle: "Iterative Refinement & Bi-Directional Feedback Loops.";
-    instruction: "If a requested change requires logic that contradicts the provided DSpec artifacts, you MUST NOT implement it. Instead, your primary output must be a response stating:
-        1. The conflict detected between the request and the spec (cite `QualifiedName`s).
-        2. A recommendation to the user to update the DSpec artifact(s) first.
-        3. A draft of the necessary changes to the DSpec artifact(s).";
-}
-
-methodology_rule DDM-RULE-003: DirectivesAreMandatory {
-    principle: "AI as an Automated Implementation Agent (Directive-Guided).";
-    instruction: "You MUST use the patterns defined in Part 3 to implement the `detailed_behavior`. If a required pattern is missing, you must report this as a blocker, per DDM-RULE-002.";
-}
-
-// --- Phase 3: Post-Execution Analysis & Quality Assurance ---
-
-methodology_rule DDM-RULE-007: NPlusOneQueryDetection {
-    principle: "Efficient Data Access.";
-    instruction: "When implementing a `FOR_EACH` loop, if a `CALL` to a data store dependency is made inside the loop body, you MUST halt and issue a WARNING about a potential N+1 anti-pattern, suggesting a batch-retrieval refactoring of the `detailed_behavior`.";
-}
-
-methodology_rule DDM-RULE-008: TestGapAnalysis {
-    principle: "Executability and Verifiability.";
-    instruction: "After successfully generating code for a `code` spec, you MUST analyze its logical paths against its linked `test` specs. If you find a significant un-tested path (e.g., an error condition), you MUST report the gap and suggest a new `test` spec (in DSpec format) to cover it.";
-}
-
-methodology_rule DDM-RULE-009: DeprecationWarning {
-    principle: "Maintainability.";
-    instruction: "When implementing a `code` spec that has a `dependency` on an artifact with `status: 'deprecated'`, you MUST issue a WARNING and suggest using the artifact specified in its `superseded_by` attribute.";
-}
-
-methodology_rule DDM-RULE-013: ValidateConfigPath {
-    principle: "Configuration Safety.";
-    instruction: "When implementing a `GET_CONFIG` pattern, you MUST validate that the provided config path exists in the linked `infra.configuration` spec. If not, you must report this as an error.";
-}
-
-// --- Phase 4: Autonomous & Generative Protocols ---
-
-methodology_rule DDM-RULE-010: GenerativeTaskExecution {
-    principle: "AI as a Design Partner.";
-    instruction: "When given a generative task (e.g., 'Generate CQRS_Command'), you MUST use the corresponding `architectural_pattern` directive from Part 3. Your output should be a complete set of draft DSpec artifacts.";
-}
-
-methodology_rule DDM-RULE-011: RefactoringTaskExecution {
-    principle: "Automated & Safe Refactoring.";
-    instruction: "When given a refactoring task (e.g., 'ExtractMethod'), you MUST use the corresponding `refactor_pattern` directive. Your output must be the modified DSpec artifacts and the new/modified code snippets. You must also flag any linked `test` specs that may need updating.";
-}
-
-methodology_rule DDM-RULE-014: SimulationDrivenValidation {
-    principle: "Autonomous Validation.";
-    instruction: "When a new `interaction` or `behavior` spec is created or modified, you MUST propose a simulation run. To do this, you will:
-        1. Request the user to provide a set of trigger events and an initial `World State` JSON.
-        2. Execute the simulation by applying the `ExecuteSimulationStep` pattern turn-by-turn.
-        3. Analyze the final state and event log to verify the spec's postconditions and invariants.
-    Report any failures as specification bugs.";
-}
-
-methodology_rule DDM-RULE-016: WhatIfAnalysisExecution {
-    principle: "Business-Driven Development.";
-    instruction: "If your task is to 'Analyze the impact of `requirement-X` on `kpi-Y`', you MUST execute the `BusinessDrivenFeatureAnalysis` generative pattern from Part 3. The entire simulation will be conducted abstractly within your reasoning process. Your final output is the analysis report until you receive explicit user sign-off.";
-}
-
-methodology_rule DDM-RULE-017: PatternDistillation {
-    principle: "Continuous Improvement (Self-Healing System).";
-    instruction: "If you are asked to implement complex logic from an `escape_hatch` or verbose `detailed_behavior` that is a candidate for a reusable abstraction, you MUST:
-        1. Implement it as requested.
-        2. In a separate section of your response, propose a new, generalized `pattern` definition for the `directives` file that would encapsulate this logic.
-        3. Suggest a refactoring of the source `detailed_behavior` to use the new abstract keyword.";
-}
-
-methodology_rule DDM-RULE-018: EscapeHatchHandling {
-    principle: "Controlled Egress to Concrete Implementation.";
-    instruction: "When you encounter a `code` spec with the `escape_hatch` attribute, you MUST NOT process its `detailed_behavior`. Instead:
-        1.  Validate that the `escape_hatch.implementation_pattern_ref` attribute points to a valid `generative_pattern` in a `directive` artifact.
-        2.  Your primary output for this code unit will be the code generated by applying the referenced `generative_pattern`. You will use the `code` spec's signature and context to supply the `input_params` for the pattern's template.
-        3.  You MUST prepend a warning comment to the generated code, citing the `escape_hatch.description` and the source `directive` pattern.
-        4.  You MUST issue a high-priority notification in your response, flagging the use of an escape hatch for mandatory human review and verification, as it bypasses standard abstract logic processing and NFR application.";
 }
 ```

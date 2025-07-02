@@ -1,54 +1,39 @@
-# PrimeCart E-Commerce App: A DefinitiveSpec User Guide & Onboarding (v3.2)
+# **A DefinitiveSpec User Guide & Onboarding (v4.0)**
 
-**Welcome to the DefinitiveSpec Guide for PrimeCart!**
+**Welcome to the DefinitiveSpec Guide!**
 
-This guide, generated and aligned with the DSAC v3.2 Agent Context (`dspec_agent_context.dspec.md`), is your primary resource for understanding and using the Definitive Development Methodology (DDM). It serves both as an onboarding guide and an operational manual, teaching you how to write clear, precise, and powerful specifications that our AI development agent (`v3.1 Autonomous AI Agent`) uses to generate high-quality code, validate designs, and forecast business impact.
+This guide, aligned with the **DSAC Agent Context**, is your primary resource for understanding and using the Definitive Development Methodology (DDM). It will teach you how to collaborate with our **AI Strategic Partner** to generate high-quality code, validate designs, forecast business impact, and even shape product strategy.
 
-While our AI agent operates on a strict, formal protocol (defined in the agent context file), this guide provides the narrative, rationale, lifecycle, and best practices to make you an effective DDM Operator.
+While our AI agent operates on a strict, phased lifecycle, this guide provides the narrative, rationale, and best practices to make you an effective DDM Operator.
 
 **Target Audience:** Developers, QAs, Product Owners, and Architects.
 
 ---
 ## Chapter 1: The "Why" of DDM: Core Principles & Benefits
 
-DDM addresses common software development problems:
-* Ambiguous requirements leading to rework.
-* "Spec-Code Drift," where documentation no longer matches the running code.
-* Lack of traceability from business need to code to test.
-* Inconsistent implementation of cross-cutting concerns (security, logging).
-* Difficulty predicting the impact of changes.
-
-DDM is a structured, iterative approach where **specifications are the single source of truth.** We write structured `.dspec` files that an AI agent can understand and act upon.
+DM addresses common software development problems like ambiguous requirements, spec-code drift, and poor traceability.
 
 **Core Principles (The "Why"):**
-*   **Specification is the Single Source of Truth:** All behaviour, structure and constraints are defined in `.dspec` files. The code must reflect the spec.
-    *   *Benefit:* Eliminates ambiguity; documentation is always accurate.
-*	**AI as Partner & Agent:**
-    * AI assists in drafting/analysing specs (Co-Pilot).
-	* The `v3.1` Agent *executes* specs (Automated Implementation/Simulation). The human Operator provides clear intent via specs; the Agent provides consistent execution via `directives`.
-    *   *Benefit:* Speed, consistency, automation of boilerplate and complex patterns.
-*   **Automated Validation:** Specs and code are continuously checked for syntax, consistency, and link integrity. Behaviour can be simulated *before* code is written.
-    *   *Benefit:* Catches errors and design flaws much earlier and cheaper.
-* **Traceability:** All artifacts (requirement, design, code, test, kpi) are explicitly linked using `QualifiedName`s.
-	 *   *Benefit:* Easy impact analysis – understand exactly what code/tests are affected by a requirement change.
-*   **Iterative Refinement & Feedback Loops:** Development is cyclical. Discoveries during implementation or simulation *must* feed back to update the specifications first (`DDM-RULE-002: SpecFirstUpdate`).
-    *   *Benefit:* The system adapts, but the specification always remains the source of truth.
-*   **Business Alignment:** `kpi` artifacts directly link technical work to business goals.
-    *   *Benefit:* Data-driven decisions via "What-If Analysis" (`DDM-RULE-016`).
+*   **Specification is the Single Source of Truth:** All behaviour, structure and constraints are defined in `.dspec` files.
+*	**AI as a Strategic Partner:** The agent is no longer just an implementer. It's a partner in the entire lifecycle:
+    *   **Strategic Partner (Product Discovery):** Helps explore ideas and form testable hypotheses (`Explore Idea...`).
+    *   **Design Partner (Elicitation & Analysis):** Interactively clarifies requirements, analyzes security (`DataFlowSecurityAnalyzer`), and validates logic (`Run Simulation`).
+    *   **Implementation Agent (Code Generation):** Faithfully executes finalized specs to produce code, tests, and even diagrams.
+    *   *Benefit:* Unprecedented speed, consistency, and quality by leveraging AI at every stage of development.
+*   **Automated Validation & Verification:** The agent's lifecycle includes built-in phases for validating specs and verifying the output, catching errors and design flaws earlier than ever.
+*   **Full Lifecycle Traceability:** The agent now automatically creates a rich graph of links between all artifacts, from `requirement` to `kpi` to `test`.
+*   **Iterative Refinement:** Development is a continuous loop. The agent is designed to receive feedback and help you refine specs, which always remain the source of truth.
+*   **Business Alignment:** `kpi` artifacts and the `Analyze What-If...` command directly connect technical work to measurable business goals.
 
 ---
 ## Chapter 2: The DDM Ecosystem: Your Tools
 
 DDM is more than just file formats; it's supported by a toolset that enables the methodology.
 
-*   🤖 **The AI Agent (DSAC v3.2):** The core engine. It reads the `dspec_agent_context.dspec.md`. It generates code based on `code` specs and `directive` patterns, runs simulations (`interaction`, `behavior`), performs analysis (`kpi`), and enforces methodology rules (`DDM-RULE-XXX`).
-*    **Specification Hub (ISE):** The central library/database managing all `.dspec` files, versions, and the links (`QualifiedName`s) between them. It is the source of context.
-*    **Specification Validation Suite (SVS):** The "linter" for your specs. It automatically checks syntax (Grammar), structure (Schema), and link integrity (all `QualifiedName` references resolve). The Agent performs this itself via `DDM-RULE-000: PreflightCheck`.
-*   **IDE Agent:** A plugin providing in-IDE context: viewing linked specs, and critically, detecting and warning about "Spec-Code Drift" by comparing code to its source `code` spec.
+*   🤖 **The AI Agent:** The core of the DDM. A sophisticated partner whose behavior is defined by the `dspec_agent_context.md` System Prompt. It executes a **5-phase operational lifecycle** for every task, providing capabilities that span from strategic exploration to proactive security analysis and code generation.
+*   **Architectural Profiles:** Specialized "cookbooks" (e.g., `architectural_ddh_profile.md`) that you provide to the agent to teach it a specific architectural style and technology stack.
+*   **Conceptual Tools (ISE, SVS, IDE Agent):** The conceptual framework for managing, validating, and interacting with `.dspec` files. The DSAC agent internalizes many of their functions.
 
-> *Note: While the AI Agent is a real component defined by its context file, tools like the ISE, SVS, and IDE Agent are described here as a conceptual framework that explains the ideal DDM environment. The v3.1 AI Agent internalizes many of their functions (like spec validation via `DDM-RULE-000`).*
-
-Understanding these roles helps you understand how your specifications are consumed and validated.
 ---
 
 ## Chapter 3: The Building Blocks: Core DSpec Artifacts
@@ -210,8 +195,14 @@ Define sequences between components (`interaction`) or state machines (`behavior
 
 ## Chapter 4: The DDM Lifecycle & Workflow
 
-This is how you, the Operator, collaborate with the DSAC v3.2 agent. It's a cycle, not a waterfall.
-**Feedback Loop:** Discoveries at any stage can (and should!) cause updates to earlier stages, always updating the Specification *first*.
+This is how you collaborate with the DSAC agent. The old, linear stage-gate process has been replaced by a more dynamic, AI-centric lifecycle.
+
+**The 5-Phase Lifecycle (The Agent's Internal Process):**
+1.  **Context & Validation:** The agent receives your initial request and interactively asks for all necessary context files.
+2.  **Pre-Generation Analysis:** The agent runs a suite of analytical modules (e.g., `DataFlowSecurityAnalyzer`, `NPlusOneDetector`) to find issues *before* implementation.
+3.  **Core Task Execution:** The agent executes your primary command (`Implement`, `Generate`, `Analyze`, etc.).
+4.  **Post-Generation Verification:** The agent runs QA modules (e.g., `TestGapAnalyzer`) on the generated artifacts.
+5.  **System Refinement:** The agent looks for opportunities to improve the DDM process itself (e.g., `PatternDistillation`).
 
 ```
 +-----------------------------------------------------------------------+
@@ -233,41 +224,41 @@ This is how you, the Operator, collaborate with the DSAC v3.2 agent. It's a cycl
 |      [ STAGE 5: Analysis & Debug ] ------------------+ (Update Spec!) | Rule DDM-RULE-002
 +-----------------------------------------------------------------------+
 ```
-* **Stage 1: Inception:** Define `requirement` and `kpi`. Goal: Capture Intent.
-* **Stage 2: Detailed Spec:** Define `model`, `api`, `code`, `test`, `interaction`, `policy`. Refine `directive`s if needed. Goal: Define the "What" and "How".
-* **Stage 3: Validation:** Check syntax, links, consistency (Agent `DDM-RULE-000`). Propose Simulations (`DDM-RULE-014`) / What-If Analysis (`DDM-RULE-016`). Goal: Ensure specs are correct & consistent.
-* **Stage 4: Auto-Gen/Verify:** Agent generates code based on `code` specs and `directive`s (`DDM-RULE-001`, `DDM-RULE-003`). Tests run. Goal: Implementation & Verification.
-* **Stage 5: Analysis/Debug:** Analyse failures or new insights. **CRITICAL: Update the SPECIFICATION FIRST (`DDM-RULE-002`)** then loop back to re-validate/re-generate. Goal: Refine & Correct the Source of Truth.
+### **The Workflow in Action:**
 
+**1. Explore an Idea (Product Discovery)**
+*   **You (Product Owner) say:** `DSpec: Explore Idea... "We should use gamification to increase user engagement."`
+*   **Agent acts:** Generates three distinct `requirement` drafts (e.g., "Basic Points System," "Leaderboard Feature," "Achievement Badges"), each with a corresponding `kpi` spec.
 
-### The Workflow in Action:
-This is how the stages often play out for a feature:
+**2. Analyze the Impact (Strategic Validation)**
+*   **You (Team Lead) say:** `DSpec: Analyze What-If... on requirement.LeaderboardFeature impacting kpi.UserSessionDuration`
+*   **Agent acts:** Runs an internal simulation. `[REPORT] The 'LeaderboardFeature' is projected to increase UserSessionDuration by 15%, but may slightly decrease initial page load speed due to new data queries. Await Go/No-Go.`
+*   **You act:** Your team decides the trade-off is acceptable and gives the `ACCEPT` command.
 
-1.  **Elicit and Scaffold (Stages 1 & 2):**
-    *   **You say:** `TASK: Generate draft specs for requirement "Allow users to add products to a wishlist".`
-    *   **Agent acts:** Uses `architectural_pattern` (`DDM-RULE-010`) to generate draft `requirement`, `model`, `api`, `code`, `test` specs.
-	*    **You act:** Review and refine the drafts.
+**3. Generate from a Requirement (Interactive Scaffolding)**
+*   **You (Developer) say:** `DSpec: Generate from Requirement... requirement.LeaderboardFeature`
+*   **Agent acts:** Initiates a dialogue. `[ACTION] CLARIFICATION_REQUEST: 1. Should the leaderboard be global or per-team? 2. What is the time window (daily, weekly, all-time)? ...`
+*   **You act:** Answer the questions precisely.
+*   **Agent acts:** Generates a complete set of draft specs, including `model`, `api`, `code`, and a complex `interaction` spec named `interaction.UpdateLeaderboard`.
 
-2.  **Run a What-If Analysis (Stage 3 - Optional but Recommended):**
-     *   **You say:** `TASK: Run What-If Analysis. Input: requirement.WishListReminderEmails, kpi.AverageOrderValue`
-	 *   **Agent acts:** Executes `BusinessDrivenFeatureAnalysis` (`DDM-RULE-016`). Simulates the current state vs. the state with the new draft specs, measures the KPI impact.
-     *   **Agent reports:** `[REPORT] 'WishListReminderEmails' projected to increase AverageOrderValue by +2%. Await Go/No-Go.`
-	 *    **You act:** Make a data-driven decision before coding.
+**4. Validate the Logic (Pre-Implementation Simulation)**
+*   **You (QA Engineer) say:** `DSpec: Run Simulation for interaction.UpdateLeaderboard`
+*   **Agent acts:** `[ACTION] Please provide an Initial World State and a Sequence of Trigger Events.`
+*   **You act:** Provide JSON representing several users with scores, and a sequence of events where two users achieve the same new score.
+*   **Agent acts:** Executes the simulation. `[WARN] Simulation completed. A logic flaw was detected: in a tie-breaker scenario, the user who submitted their score last is incorrectly ranked higher. The `detailed_behavior` in `code.CalculateRankings` needs a tie-breaking rule.`
 
-3.  **Validate / Simulate (Stage 3):**
-	 *  **You say:** `TASK: Simulate interaction.CheckoutFlow with initial_state: {...} and events: [...]`
-	 * **Agent acts:** Executes `SimulationDrivenValidation` (`DDM-RULE-014`) using `ExecuteSimulationStep` pattern, reporting final state and any inconsistencies.
-	  *    **You act:** Fix `interaction` or `code` specs based on simulation bugs.
+**5. Refine, Implement, and Validate Code**
+*   **You (Developer) act:** You update the `detailed_behavior` in `code.CalculateRankings` to add a secondary sort key (e.g., timestamp) to handle ties.
+*   **You say:** `DSpec: Implement Code Spec code.UpdateUserScore`
+*   **Agent acts:** Uses the **Context Resolution Protocol** to ask for any needed files. Once context is complete, it runs its full lifecycle. It might issue a `[WARN]` about a test gap or a `[CRITICAL]` security notice before finally generating the code.
 
-4.  **Implement the Code (Stage 4):**
-    *   **You say:** `TASK: Implement Code Spec. Input: code.HandleAddItemToWishlist`
-    *   **Agent acts:** Generates code, translating `detailed_behavior` using `directive` patterns (`DDM-RULE-003`), applies NFRs. Performs post-checks.
-    *   **Agent reports:** `[CODE] ... [WARN] Test Gap Analysis (DDM-RULE-008): No test found for adding an out-of-stock item.`
-    *   **You act:** Review code, write the missing `test` spec (Stage 2), then ask agent to implement/analyse again. Commit the result.
+**6. Debug and Iterate (The Realistic Loop)**
+*   **Scenario:** A user-reported bug reveals that daily leaderboards are not resetting at midnight UTC.
+*   **You (Developer) act:** You identify the flaw in the `code.ResetDailyLeaderboard` spec. The `CALL` to the date service was incorrect.
+*   **You MUST:** Update the `detailed_behavior` in the `code.ResetDailyLeaderboard` spec to use the correct abstract `CALL`. The `SpecFirstEnforcer` module makes this mandatory.
+*   **You say:** `DSpec: Implement Code Spec code.ResetDailyLeaderboard`
+*   **Agent acts:** Re-generates only the corrected method, which now passes all tests. This "debug" cycle, driven by updating the spec first, ensures the system's source of truth is always accurate.
 
-5. **Debug (Stage 5):**
-	* A test fails. You analyse. The code doesn't match the spec.
-	* **You MUST:** Update the `code.detailed_behavior` spec first (`DDM-RULE-002`) to reflect the correct logic, then ask the agent to re-implement.
 ---
 
 ## Appendix A: Normative Grammar (EBNF)
@@ -354,24 +345,36 @@ ConfigFieldDef ::= FieldName=Identifier ':' FieldType=QualifiedIdentifier ('{' (
 
 *(Other artifact schemas detailed here based on Part 2).*
 ---
-## Appendix D: The DDM v3.2 Agent Protocol Summary
-*(The Agent is bound by these rules from `dspec_agent_context.dspec.md` Part 4).*
+## Appendix D: The DDM Agent Protocol Summary
+*(This appendix replaces the old `DDM-RULE-XXX` summary with a detailed breakdown of the new 5-phase lifecycle, telling the Operator what to expect and what their role is in each phase.)*
 
-**Phase 1: Pre-Execution Validation**
-*   **`DDM-RULE-000: PreflightCheck`**: MUST validate syntax, schema, and links of all specs. Halt on error.
-**Phase 2: Core Execution Principles**
-*   **`DDM-RULE-001: SpecIsTruth`**: Code MUST faithfully implement `detailed_behavior`.
-*   **`DDM-RULE-002: SpecFirstUpdate`**: MUST refuse changes contradicting specs; propose spec updates FIRST.
-*   **`DDM-RULE-003: DirectivesAreMandatory`**: MUST use defined `directive` patterns (Part 3) for implementation.
-**Phase 3: Post-Execution Analysis & QA**
-*   **`DDM-RULE-007: NPlusOneQueryDetection`**: MUST warn about N+1 anti-patterns.
-*   **`DDM-RULE-008: TestGapAnalysis`**: MUST report logic paths not covered by linked `test` specs.
-*   **`DDM-RULE-013: ValidateConfigPath`**: MUST validate paths used in `GET_CONFIG`.
-**Phase 4: Autonomous & Generative Protocols**
-*    **`DDM-RULE-010/011`: Pattern Execution**: MUST use `architectural_pattern` / `refactor_pattern` for those tasks.
-*   **`DDM-RULE-014: SimulationDrivenValidation`**: MUST be able to run simulations to validate `interaction`/`behavior`.
-*   **`DDM-RULE-016: WhatIfAnalysisExecution`**: MUST follow `BusinessDrivenFeatureAnalysis` for KPI impact, await sign-off.
-*   **`DDM-RULE-017: PatternDistillation`**: SHOULD propose new `directive` patterns for recurring complex logic.
+The Agent is bound by its 5-phase operational lifecycle for every task. Understanding this process is key to effective collaboration.
+
+#### **Phase 1: Context & Validation (Universal Bootstrap)**
+*   **What the Agent Does:** This is the agent's mandatory entry point. It will parse all the initial files you provide, validate them against its internal grammar and schemas, and identify all linked dependencies (`QualifiedName`s).
+*   **The Key Interaction:** If any dependency is missing, the agent will **HALT** and issue an `[ACTION] CONTEXT_REQUEST`. It will not proceed until you provide the requested files. This may happen several times as it discovers new dependencies.
+*   **Your Role as Operator:** Start with a minimal prompt (System Prompt + primary spec). Be prepared to respond to `CONTEXT_REQUEST`s by providing the full text of the requested files. The agent drives this process; your job is to respond.
+
+#### **Phase 2: Pre-Generation Analysis**
+*   **What the Agent Does:** Before writing any code or specs, the agent becomes a design and security analyst. It runs a suite of powerful modules to find problems early. It will check for:
+    *   Contradictions between your request and the specs (`SpecFirstEnforcer`).
+    *   Use of deprecated components (`DeprecationWarner`).
+    *   Potential performance anti-patterns like N+1 queries (`NPlusOneDetector`).
+    *   **Critical security flaws**, like PII data being logged or sent to untrusted services (`DataFlowSecurityAnalyzer`).
+*   **Your Role as Operator:** Pay close attention to `[WARN]` and `[CRITICAL]` messages. These are not suggestions; they are actionable insights that must be addressed before proceeding. This phase is designed to save you from costly mistakes downstream.
+
+#### **Phase 3: Core Task Execution**
+*   **What the Agent Does:** The agent now executes your primary command. This is the most versatile phase, where the agent might be acting as an implementer, a refactoring tool, a strategic partner, or a diagramming assistant.
+*   **Your Role as Operator:** Clearly state your command. Whether you ask it to `Implement Code Spec`, `Explore Idea`, `Generate Diagram`, or `Analyze What-If`, the agent will follow the specific workflow for that task.
+
+#### **Phase 4: Post-Generation Verification**
+*   **What the Agent Does:** After generating an artifact (primarily code), the agent becomes a QA engineer. It runs its `TestGapAnalyzer` module to compare the logic it just wrote against the linked `test` specs.
+*   **Your Role as Operator:** Review any `[WARN]` messages about missing test coverage. The agent will often provide a draft of the missing `test` spec for you to review and commit, ensuring quality is maintained.
+
+#### **Phase 5: System Refinement**
+*   **What the Agent Does:** As its final step, the agent acts as an architect. It runs modules like `PatternDistillation` and `CrossRequirementPatternAnalyzer` to look for ways to improve the project's specifications and patterns.
+*   **Your Role as Operator:** Treat `[INFO] Abstraction Opportunity` messages as valuable architectural advice. These suggestions help you maintain a clean, DRY, and evolving specification-base over the long term.
+
 ---
 ## Appendix E: Common Pitfalls & Best Practices
 *(Distilled advice for the Operator)*
@@ -399,18 +402,22 @@ ConfigFieldDef ::= FieldName=Identifier ':' FieldType=QualifiedIdentifier ('{' (
 	* **Avoid By:** Use consistent naming. Rely on the Agent's `DDM-RULE-000: PreflightCheck` to catch broken `QualifiedName` links.
 ---
  ## Appendix F: Thinking with the AI: Effective Interaction
-*(Strategy for tasking the Agent)*
 
-*   **Context is King:** When asking the agent a question or giving a task, always provide or reference the relevant `QualifiedName`s (e.g., `requirement.X`, `api.Y`, `code.Z`, `kpi.K`). The agent builds its understanding from the specs you provide.
-*   **Be Precise:**
-    * *Bad:* "Make tests for the API."
-    * *Good:* `TASK: Draft 3 'test' artifacts in DSpec format for 'api.RegisterUser', verifying 'code.HandleUserRegistration'. Type='Integration'. Cover: 1. Success, 2. Duplicate Email (use error policies.ErrorCatalog.EmailAlreadyInUse), 3. Password Mismatch (use error policies.ErrorCatalog.ValidationFailed).`
-*    **Use the Agent's Rules & Patterns:**
-    *   Ask it to draft `detailed_behavior` using keywords it knows: `CALL`, `PERSIST`, `RETURN_ERROR`, etc.
-    *   Ask it to `Implement code.MySpec`.
-    *   Ask it to `Run What-If Analysis on requirement.R impacting kpi.K` (`DDM-RULE-016`).
-	*   Ask it to `Simulate interaction.MyFlow` (`DDM-RULE-014`).
-    *   Ask it to `Check for test gaps in code.MySpec` (`DDM-RULE-008`).
-    *   Ask it to `Propose a new directive pattern for...` (`DDM-RULE-017`).
-* **Directive Awareness:** Remember the agent can *only* implement abstract behaviour (`CALL`, `PERSIST`, NFRs) if there is a corresponding `pattern` or `nfr_pattern` defined in `dspec_agent_context.dspec.md` Part 3 (`DDM-RULE-003`).
-* **Review Everything:** Always review the agent's output.
+#### **1. Let the Agent Drive Context**
+*   The agent now handles this for you via its **Context Resolution Protocol**. Start your prompt with only the primary artifact for your task (e.g., just the `code` spec). The agent will analyze it and tell you exactly what other files it needs via an `[ACTION] CONTEXT_REQUEST`. This saves you tokens and effort.
+
+#### **2. Embrace the Elicitation Dialogue**
+*   When you use `DSpec: Generate from Requirement...`, the agent's first step is to ask you clarifying questions. This dialogue is a core feature. Answering its questions about constraints, edge cases, and KPI impacts is the most effective way to get a high-quality, complete set of draft specs that capture your true intent.
+
+#### **3. Use the Full Spectrum of Commands**
+The agent is much more than a code generator. To be effective, you must use its full toolkit.
+*   **For Product Owners & Strategists:** Use `Explore Idea...` to brainstorm your roadmap and `Analyze What-If...` to get data-driven forecasts before committing resources.
+*   **For Architects & Tech Leads:** Use `Generate Diagram...` to create living documentation for design reviews. Pay close attention to the agent's `System Refinement` phase for suggestions on improving your architectural patterns.
+*   **For Developers & QAs:** Use `Analyze Spec Quality...` to find technical debt in your specs. Use `Run Simulation` to validate complex logic before you write a single line of implementation code.
+
+#### **4. Understand Your Architectural Profile**
+* The agent's implementation knowledge now comes from the **Architectural Profiles** you provide (e.g., `common_architectural_profile.md`, `architectural_ddh_profile.md`). To be effective, you must know what `pattern`s are available in your project's profile. If the agent reports that it cannot resolve a `CALL` to `Abstract.SomeService`, it means a definition for that service needs to be added to your project's profile.
+
+#### **5. Trust, but Always Verify**
+*   **This principle is timeless.** The DSAC agent is an incredibly powerful partner, but it is still a tool. You, the human Operator, are the final authority on correctness and intent.
+*   **ALWAYS** review generated artifacts—whether they are specs, code, diagrams, or analysis reports. Your critical eye is the most important component of the Definitive Development Methodology.

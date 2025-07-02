@@ -225,7 +225,7 @@ export default function DDM2Page() {
                   size="large"
                   Icon={BookOpen}
                   name="Agent Manual"
-                  href="https://github.com/ArchitectLM/DDM/blob/main/agent_guid.md"
+                  href="https://github.com/ArchitectLM/DDM/blob/main/agent_guide.md"
                   colors={{
                     main: '#06b6d4',
                     before: '#0891b2',

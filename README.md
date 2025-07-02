@@ -37,7 +37,7 @@ This methodology is defined by three key documents, each serving a distinct purp
     *   **Part 3: Core Implementation & Generative Directives:** The agent's "Cookbook" of implementation patterns (`PERSIST`, `CALL`, NFR patterns, etc.).
     *   **Part 4: Methodology Micro-Guide:** The mandatory `DDM-RULE-XXX` protocol that the agent MUST follow.
 
-### 3. 🗺️ `agent_guid.md` - Tactical Field Manual & SOPs
+### 3. 🗺️ `agent_guide.md` - Tactical Field Manual & SOPs
 
 *   **Purpose:** A collection of role-specific, tactical documents outlining Standard Operating Procedures (SOPs) for specific, advanced tasks. It's the "how-to" for executing key DDM processes.
 *   **Audience:** Role-specific (Developers, Architects, Team Leadership).
@@ -94,14 +94,14 @@ To get started with the DDM and the DSAC v3.2 agent, follow this path based on y
 2.  **Skim:** Review the appendices in the `methodology_guide.md`, paying special attention to "Common Pitfalls" (Appendix E).
 
 #### **For Developers:**
-1.  **After the Guide:** Read the **"Operator's Field Manual"** in `agent_guid.md`. This is your tactical guide for day-to-day tasks.
+1.  **After the Guide:** Read the **"Operator's Field Manual"** in `agent_guide.md`. This is your tactical guide for day-to-day tasks.
 2.  **Reference as Needed:** When writing `detailed_behavior`, refer to **Part 3 (Directives)** of `dspec_agent_context.dspec.md` to see the available `pattern` keywords (`CALL`, `PERSIST`, etc.) and how they work.
 
 #### **For Architects & Tech Leads:**
 1.  **Read Everything:** You are the custodians of the methodology and its implementation.
 2.  **Master:** The `dspec_agent_context.dspec.md` is your primary domain. You own the patterns in Part 3.
-3.  **Implement:** The **"Directive Governance Process"** in `agent_guid.md` is your SOP for managing architectural patterns.
+3.  **Implement:** The **"Directive Governance Process"** in `agent_guide.md` is your SOP for managing architectural patterns.
 
 #### **For Product Owners & QA Engineers:**
 1.  **Primary Document:** The `methodology_guide.md` is your main resource. Focus on how to write clear `requirement`, `kpi`, and `test` specifications.
-2.  **Reference for Tasks:** Refer to the **"Operator's Field Manual"** in `agent_guid.md` if you are involved in running `What-If Analysis` or `Simulations`.
+2.  **Reference for Tasks:** Refer to the **"Operator's Field Manual"** in `agent_guide.md` if you are involved in running `What-If Analysis` or `Simulations`.

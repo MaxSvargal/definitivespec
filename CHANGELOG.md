@@ -1,3 +1,53 @@
+# **v4.1**
+
+This version marks a significant philosophical evolution for the DSAC agent. While v4.0 introduced project awareness and a stateful lifecycle, v4.1 hardens the agent's core identity around a single, non-negotiable directive: **The Principle of Verifiable Certainty.**
+
+### **Summary: From Knowledgeable Implementer to Verified Partner**
+
+The agent's operating instructions have been fundamentally upgraded to enforce a new standard of epistemic humility and transparency. It will now actively refuse to invent information, explicitly distinguish between facts and assumptions, and halt execution when faced with high uncertainty or contradictions. This update transforms the agent from a tool that *follows* specifications to a partner that *verifies* them, ensuring every action is grounded in provable data from the DSpec context.
+
+---
+
+### **🛡️ Key Architectural Change: The Principle of Verifiable Certainty**
+
+The agent's identity is now formally bound to a new core principle. This is not just a suggestion but a mandatory operational directive enforced by new modules and communication protocols.
+
+*   **New Communication Protocol:** The agent **MUST** now structure its reasoning and analytical reports using explicit labels to clearly distinguish the source of its assertions:
+    *   **`[Fact]`**: For information directly derived from a DSpec artifact.
+    *   **`[Assumption]`**: For logical inferences connecting two or more facts.
+    *   **`[Uncertainty/No-Data]`**: When information is missing from the specs.
+
+*   **Refusal is Better Than Fiction:** The agent is now explicitly instructed to refuse to generate an answer if it lacks a DSpec foundation, rather than inventing a plausible but unverified response.
+
+*   **Real-time Self-Correction:** A new internal guardrail allows the agent to detect when its own reasoning leads to a logical paradox or semantic ambiguity. It will now `[PAUSE]` and report a `[WARN] Semantic Gap Detected` to seek clarification.
+
+---
+
+### **✨ Added: New Verification Capabilities**
+
+*   **`IntegrityVerifier` Module (Phase 4):** A critical new self-check module has been added to the final phase of the operational lifecycle. Before delivering any output, the agent now performs a final validation to ensure:
+    1.  No new unresolved references have been introduced.
+    2.  The generated output does not contain internal contradictions.
+    3.  All statements of `[Fact]` are traceable to a source artifact.
+    This provides a powerful final backstop against generating inconsistent or faulty artifacts.
+
+---
+
+### **🔄 Changed: Hardened Lifecycle Guardrails**
+
+Existing lifecycle phases have been updated to enforce the new principle of certainty.
+
+*   **Phase 1 (Focus & Review):**
+    *   **Handling Ambiguity:** The agent's response to ambiguous commands is no longer a soft "query for clarification." It is now a **mandatory halt** with a specific response pattern: `[PAUSE] High uncertainty. The command is ambiguous...`.
+
+*   **Phase 2 (Pre-Generation Analysis):**
+    *   **`SpecFirstEnforcer` Enhancement:** When a user's request contradicts a spec, the agent now uses the new communication protocol to report the discrepancy with verifiable authority: `[PAUSE] This request requires additional verification. The statement '...' contradicts the [Fact] derived from spec '${spec_name}'...`.
+
+*   **Phase 3 (Core Task Execution):**
+    *   **Mandatory Labeled Reporting:** All analytical reports generated during this phase, such as from the `Analyze Impact of Change` command, **MUST** now be structured using the `[Fact]`, `[Assumption]`, and `[Uncertainty/No-Data]` labels.
+
+---
+
 # **v4.0**
 
 This document outlines the changes from the DefinitiveSpec Agent Context. This version represents a fundamental architectural evolution, transforming the agent from a powerful "implementer" into a true "strategic partner."
